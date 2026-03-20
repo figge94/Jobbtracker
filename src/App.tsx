@@ -1,21 +1,30 @@
 import { useState } from "react";
-import { Button, Container, Heading, Stack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Container,
+  Heading,
+  Stack,
+  IconButton,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { JobBoard } from "./components/jobs/JobBoard";
-import { JobForm } from "./components/jobs/JobForm";
 import { JobList } from "./components/jobs/JobList";
 import { JobStats } from "./components/jobs/JobStats";
 import { JobFilters } from "./components/jobs/JobFilters";
+import { JobModal } from "./components/jobs/JobModal";
 import { useJobs } from "./hooks/useJobs";
 import { AppHeader } from "./components/AppHeader";
 import { groupJobsByMonth } from "./utils/job-grouping";
 import { JOB_STATUSES } from "./utils/job-status";
 import type { Job, JobStatus } from "./types/job";
+import { LuPlus } from "react-icons/lu";
 
 function groupJobsByStatus<T extends { status: JobStatus }>(jobs: T[]) {
   return Object.fromEntries(
     JOB_STATUSES.map((status) => [
       status,
-      jobs.filter((job) => job.status === status)
+      jobs.filter((job) => job.status === status),
     ])
   ) as Record<JobStatus, T[]>;
 }
@@ -31,7 +40,7 @@ export default function App() {
     addJob,
     updateJob,
     deleteJob,
-    changeStatus
+    changeStatus,
   } = useJobs();
 
   const [viewMode, setViewMode] = useState<"list" | "board">("list");
@@ -39,9 +48,15 @@ export default function App() {
   const [editingJob, setEditingJob] = useState<Job | null>(null);
 
   const jobsByMonth = groupJobsByMonth(filteredJobs);
+  const { open, onOpen, onClose } = useDisclosure();
+
+  function handleCloseModal() {
+    setEditingJob(null);
+    onClose();
+  }
 
   return (
-    <Container maxW="7xl" py={{ base: "6", md: "10" }}>
+    <Container maxW="7xl" py={{ base: "6", md: "10" }} pb="120">
       <Stack gap="8">
         <AppHeader search={search} onSearchChange={setSearch} />
 
@@ -62,16 +77,6 @@ export default function App() {
           {showJobs ? "Dölj jobb" : "Visa jobb"}
         </Button>
 
-        <JobForm
-          onAdd={addJob}
-          editingJob={editingJob}
-          onUpdate={(job) => {
-            updateJob(job);
-            setEditingJob(null);
-          }}
-          onCancelEdit={() => setEditingJob(null)}
-        />
-
         {showJobs &&
           (viewMode === "list" ? (
             <JobList
@@ -80,7 +85,7 @@ export default function App() {
               onStatusChange={changeStatus}
               onEdit={(job) => {
                 setEditingJob(job);
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                onOpen();
               }}
             />
           ) : (
@@ -97,7 +102,7 @@ export default function App() {
                     onDelete={deleteJob}
                     onEdit={(job) => {
                       setEditingJob(job);
-                      window.scrollTo({ top: 0, behavior: "smooth" });
+                      onOpen();
                     }}
                   />
                 </Stack>
@@ -105,6 +110,52 @@ export default function App() {
             </Stack>
           ))}
       </Stack>
+
+      <Box
+        position="fixed"
+        bottom="0"
+        left="0"
+        right="0"
+        h="72px"
+        borderTopWidth="1px"
+        bg="bg"
+        zIndex="1000">
+        <Box position="relative" h="full">
+          <IconButton
+            aria-label="Lägg till jobb"
+            boxSize="68px"
+            rounded="full"
+            bg="white"
+            color="gray.800"
+            boxShadow="lg"
+            _hover={{
+              bg: "gray.50",
+              transform: "translateX(-50%) scale(1.05)",
+            }}
+            _active={{
+              transform: "translateX(-50%) scale(0.95)",
+            }}
+            transition="all 0.15s ease"
+            position="absolute"
+            left="50%"
+            top="-34px"
+            transform="translateX(-50%)"
+            onClick={() => {
+              setEditingJob(null);
+              onOpen();
+            }}>
+            <LuPlus size={30} />
+          </IconButton>
+        </Box>
+      </Box>
+
+      <JobModal
+        open={open}
+        onClose={handleCloseModal}
+        onAdd={addJob}
+        onUpdate={updateJob}
+        editingJob={editingJob}
+      />
     </Container>
   );
 }

@@ -1,19 +1,31 @@
+"use client";
+
 import {
   Badge,
   Box,
   Button,
   Card,
+  createListCollection,
+  DatePicker,
   Field,
   Grid,
   HStack,
   Input,
+  Portal,
+  Select,
   Separator,
   Stack,
-  Text
+  Text,
 } from "@chakra-ui/react";
+import { parseDate } from "@internationalized/date";
+import { LuCalendar } from "react-icons/lu";
 import type { Job } from "../../types/job";
-import { JobStatusSelect } from "./JobStatusSelect";
 import { useJobForm } from "../../hooks/useJobForm";
+import {
+  JOB_STATUSES,
+  getStatusLabel,
+  getStatusColor,
+} from "../../utils/job-status";
 
 type Props = {
   onAdd: (job: Job) => void;
@@ -50,12 +62,12 @@ export function JobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props) {
     fieldsLocked,
     lockedStyles,
     handleFetchInfo,
-    handleSubmit
+    handleSubmit,
   } = useJobForm({
     onAdd,
     editingJob,
     onUpdate,
-    onCancelEdit
+    onCancelEdit,
   });
 
   const inputStyles = {
@@ -64,7 +76,7 @@ export function JobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props) {
     _hover: { borderColor: "gray.300" },
     _focusVisible: {
       borderColor: "blue.400",
-      boxShadow: "0 0 0 1px var(--chakra-colors-blue-400)"
+      boxShadow: "0 0 0 1px var(--chakra-colors-blue-400)",
     },
     _dark: {
       bg: "whiteAlpha.50",
@@ -72,10 +84,17 @@ export function JobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props) {
       _hover: { borderColor: "whiteAlpha.300" },
       _focusVisible: {
         borderColor: "blue.300",
-        boxShadow: "0 0 0 1px var(--chakra-colors-blue-300)"
-      }
-    }
+        boxShadow: "0 0 0 1px var(--chakra-colors-blue-300)",
+      },
+    },
   };
+
+  const statusCollection = createListCollection({
+    items: JOB_STATUSES.map((statusValue) => ({
+      label: getStatusLabel(statusValue),
+      value: statusValue,
+    })),
+  });
 
   return (
     <Card.Root
@@ -87,7 +106,7 @@ export function JobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props) {
       shadow="sm"
       _dark={{
         bg: "gray.900",
-        borderColor: "whiteAlpha.200"
+        borderColor: "whiteAlpha.200",
       }}>
       <Box
         px={{ base: "4", md: "6" }}
@@ -132,7 +151,7 @@ export function JobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props) {
                     ? {
                         borderColor: "whiteAlpha.300",
                         color: "gray.100",
-                        bg: "transparent"
+                        bg: "transparent",
                       }
                     : undefined
                 }
@@ -193,6 +212,7 @@ export function JobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props) {
                         value={url}
                         onChange={(e) => setUrl(e.target.value)}
                         placeholder="Klistra in annonslänk"
+                        variant="flushed"
                         size="lg"
                       />
                     </Field.Root>
@@ -239,8 +259,11 @@ export function JobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props) {
                   Uppgifter
                 </Text>
 
-                <Badge variant="outline" borderRadius="full">
-                  {status.replace("_", " ")}
+                <Badge
+                  variant="subtle"
+                  colorPalette={getStatusColor(status)}
+                  borderRadius="full">
+                  {getStatusLabel(status)}
                 </Badge>
               </HStack>
 
@@ -251,6 +274,7 @@ export function JobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props) {
                     value={company}
                     onChange={(e) => setCompany(e.target.value)}
                     placeholder="t.ex. Isolerab AB"
+                    variant="flushed"
                     readOnly={fieldsLocked}
                     {...inputStyles}
                     {...lockedStyles}
@@ -263,6 +287,7 @@ export function JobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props) {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="t.ex. Säljare"
+                    variant="flushed"
                     autoFocus={mode === "manual" || isEditing}
                     readOnly={fieldsLocked}
                     {...inputStyles}
@@ -276,6 +301,7 @@ export function JobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props) {
                     value={occupation}
                     onChange={(e) => setOccupation(e.target.value)}
                     placeholder="t.ex. Försäljning"
+                    variant="flushed"
                     readOnly={fieldsLocked}
                     {...inputStyles}
                     {...lockedStyles}
@@ -288,6 +314,7 @@ export function JobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props) {
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     placeholder="t.ex. Norrköping"
+                    variant="flushed"
                     readOnly={fieldsLocked}
                     {...inputStyles}
                     {...lockedStyles}
@@ -300,6 +327,7 @@ export function JobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props) {
                     value={employmentType}
                     onChange={(e) => setEmploymentType(e.target.value)}
                     placeholder="t.ex. Heltid"
+                    variant="flushed"
                     readOnly={fieldsLocked}
                     {...inputStyles}
                     {...lockedStyles}
@@ -308,19 +336,87 @@ export function JobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props) {
 
                 <Field.Root>
                   <Field.Label>Sista ansökningsdag</Field.Label>
-                  <Input
-                    type="date"
-                    value={deadline}
-                    onChange={(e) => setDeadline(e.target.value)}
-                    readOnly={fieldsLocked}
-                    {...inputStyles}
-                    {...lockedStyles}
-                  />
+
+                  <DatePicker.Root
+                    variant="flushed"
+                    value={deadline ? [parseDate(deadline)] : []}
+                    onValueChange={(e) => {
+                      const value = e.value?.[0];
+                      setDeadline(value ? value.toString() : "");
+                    }}
+                    disabled={fieldsLocked}
+                    positioning={{ placement: "bottom-start" }}>
+                    <DatePicker.Control>
+                      <DatePicker.Input placeholder="Välj datum" />
+
+                      <DatePicker.IndicatorGroup>
+                        <DatePicker.Trigger>
+                          <LuCalendar />
+                        </DatePicker.Trigger>
+                      </DatePicker.IndicatorGroup>
+                    </DatePicker.Control>
+
+                    <Portal>
+                      <DatePicker.Positioner>
+                        <DatePicker.Content borderRadius="xl" boxShadow="xl">
+                          <DatePicker.View view="day">
+                            <DatePicker.Header />
+                            <DatePicker.DayTable />
+                          </DatePicker.View>
+
+                          <DatePicker.View view="month">
+                            <DatePicker.Header />
+                            <DatePicker.MonthTable />
+                          </DatePicker.View>
+
+                          <DatePicker.View view="year">
+                            <DatePicker.Header />
+                            <DatePicker.YearTable />
+                          </DatePicker.View>
+                        </DatePicker.Content>
+                      </DatePicker.Positioner>
+                    </Portal>
+                  </DatePicker.Root>
                 </Field.Root>
 
                 <Field.Root>
                   <Field.Label>Status</Field.Label>
-                  <JobStatusSelect value={status} onChange={setStatus} />
+
+                  <Select.Root
+                    collection={statusCollection}
+                    value={[status]}
+                    onValueChange={({ value }) => {
+                      const nextStatus = value[0];
+                      if (nextStatus) {
+                        setStatus(nextStatus as (typeof JOB_STATUSES)[number]);
+                      }
+                    }}
+                    positioning={{ placement: "bottom-start" }}
+                    size="md">
+                    <Select.HiddenSelect />
+
+                    <Select.Control>
+                      <Select.Trigger>
+                        <Select.ValueText placeholder="Välj status" />
+                      </Select.Trigger>
+                      <Select.IndicatorGroup>
+                        <Select.Indicator />
+                      </Select.IndicatorGroup>
+                    </Select.Control>
+
+                    <Portal>
+                      <Select.Positioner>
+                        <Select.Content>
+                          {statusCollection.items.map((item) => (
+                            <Select.Item item={item} key={item.value}>
+                              {item.label}
+                              <Select.ItemIndicator />
+                            </Select.Item>
+                          ))}
+                        </Select.Content>
+                      </Select.Positioner>
+                    </Portal>
+                  </Select.Root>
                 </Field.Root>
               </Grid>
             </Stack>
