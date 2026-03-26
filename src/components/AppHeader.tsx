@@ -18,7 +18,7 @@ export function AppHeader({ search, onSearchChange }: Props) {
         <Box flex="1" p="2">
           <Heading size="4xl">Jobbtracker</Heading>
           <Text mt="2" color="fg.muted">
-            Håll koll på jobb du vill söka och jobb du redan har sökt.
+            Håll koll på jobb du har sökt eller vill söka.
           </Text>
         </Box>
 

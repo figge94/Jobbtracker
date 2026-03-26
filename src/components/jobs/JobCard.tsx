@@ -146,14 +146,18 @@ export function JobCard({
                     target="_blank"
                     rel="noreferrer"
                     color="blue.500"
-                    fontWeight="semibold">
+                    fontWeight="semibold"
+                    textDecoration="underline"
+                    textDecorationStyle="dashed"
+                    textUnderlineOffset="6px"
+                    textDecorationThickness="1px">
                     Öppna annons →
                   </Link>
                 </Box>
               )}
 
               {job.deadline && (
-                <Box px="3" py="2" borderRadius="lg" bg="bg.muted">
+                <Box px="3" py="2">
                   <JobDeadline deadline={job.deadline} compact={compact} />
                 </Box>
               )}

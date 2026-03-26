@@ -28,20 +28,27 @@ export function JobModal({
       size="lg">
       <Portal>
         <Dialog.Backdrop />
-        <Dialog.Positioner>
-          <Dialog.Content borderRadius="2xl">
-            <Dialog.Header>
-              <Dialog.Title>
-                {isEditing ? "Redigera jobb" : "Lägg till jobb"}
-              </Dialog.Title>
-            </Dialog.Header>
-
+        <Dialog.Positioner p="0">
+          <Dialog.Content
+            maxW="4xl"
+            border="none"
+            boxShadow="0"
+            borderRadius="2xl">
             <Dialog.CloseTrigger asChild>
-              <CloseButton />
+              <CloseButton
+                position="absolute"
+                top="4"
+                right="4"
+                zIndex="1"
+                rounded="full"
+                variant="ghost"
+              />
             </Dialog.CloseTrigger>
 
-            <Dialog.Body pb="6">
+            <Dialog.Body overflowY="auto" px="6" py="6" pt="8">
               <JobForm
+                isEditing={isEditing}
+                onClose={onClose}
                 onAdd={(job) => {
                   onAdd(job);
                   onClose();

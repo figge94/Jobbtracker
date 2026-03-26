@@ -21,12 +21,13 @@ export function JobStats({ stats }: Props) {
             key={status}
             borderWidth="1px"
             borderRadius="2xl"
-            bg="white"
             borderColor={`${color}.200`}
+            bg={`${color}.100`}
             shadow="sm"
             _dark={{
-              bg: "whiteAlpha.50",
-              borderColor: "whiteAlpha.200"
+              bg: `${color}.900`,
+              borderColor: `${color}.600`,
+              boxShadow: "md"
             }}>
             <Card.Body>
               <Stat.Root>
