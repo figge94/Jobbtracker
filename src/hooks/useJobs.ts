@@ -75,10 +75,6 @@ export function useJobs() {
     );
   }
 
-  function clearJobs() {
-    setJobs([]);
-  }
-
   return {
     jobs,
     search,
@@ -91,7 +87,6 @@ export function useJobs() {
     addJob,
     deleteJob,
     changeStatus,
-    updateJob,
-    clearJobs
+    updateJob
   };
 }

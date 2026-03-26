@@ -45,7 +45,6 @@ export default function App() {
     updateJob,
     deleteJob,
     changeStatus,
-    clearJobs
   } = useJobs();
 
   const [viewMode, setViewMode] = useState<"list" | "board">("list");
