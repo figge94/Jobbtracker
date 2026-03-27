@@ -11,7 +11,7 @@ export function SettingsDrawer({ open, onClose }: Props) {
     <Drawer.Root open={open} onOpenChange={(e) => !e.open && onClose()}>
       <Drawer.Backdrop />
       <Drawer.Positioner>
-        <Drawer.Content borderTopRadius="2xl">
+        <Drawer.Content>
           <Drawer.Header>
             <Drawer.Title>Inställningar</Drawer.Title>
           </Drawer.Header>

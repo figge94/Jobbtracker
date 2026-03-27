@@ -1,4 +1,3 @@
-// JobBoardColumn.tsx
 import { Badge, Box, Card, HStack, Stack, Text } from "@chakra-ui/react";
 import type { Job, JobStatus } from "../../types/job";
 import { getStatusColor, getStatusLabel } from "../../utils/job-status";
@@ -17,41 +16,65 @@ export function JobBoardColumn({
   jobs,
   onStatusChange,
   onDelete,
-  onEdit
+  onEdit,
 }: Props) {
+  const color = getStatusColor(status);
+
   return (
-    <Card.Root variant="outline" borderRadius="2xl" bg="bg.panel" h="100%">
-      <Box h="2" bg={`${getStatusColor(status)}.400`} borderTopRadius="2xl" />
+    <Card.Root
+      variant="subtle"
+      borderRadius="2xl"
+      h="fit-content"
+      overflow="hidden"
+      bg="bg.subtle"
+      border="1px solid"
+      borderColor="border.muted"
+      _dark={{
+        bg: "whiteAlpha.50",
+        borderColor: "whiteAlpha.200",
+      }}>
+      <Box h="1.5" bg={`${color}.400`} />
 
       <Card.Body p="4">
         <Stack gap="4">
           <HStack justify="space-between" align="center">
-            <Text fontWeight="semibold" fontSize="sm">
+            <Text fontWeight="semibold" fontSize="sm" letterSpacing="0.01em">
               {getStatusLabel(status)}
             </Text>
 
             <Badge
-              colorPalette={getStatusColor(status)}
+              colorPalette={color}
               variant="subtle"
               borderRadius="full"
-              px="2.5">
+              minW="7"
+              justifyContent="center"
+              px="2"
+              py="0.5"
+              fontSize="xs"
+              fontWeight="semibold">
               {jobs.length}
             </Badge>
           </HStack>
 
           {jobs.length === 0 ? (
             <Box
-              py="6"
+              py="8"
               px="4"
               borderRadius="xl"
-              bg="bg.muted"
+              borderWidth="1px"
+              borderStyle="dashed"
+              borderColor="border.muted"
+              bg="transparent"
+              _dark={{
+                borderColor: "whiteAlpha.200",
+              }}
               textAlign="center">
               <Text fontSize="sm" color="fg.muted">
                 Inga jobb här ännu
               </Text>
             </Box>
           ) : (
-            <Stack gap="3">
+            <Stack gap="4">
               {jobs.map((job) => (
                 <JobCard
                   key={job.id}

@@ -1,4 +1,4 @@
-import { Box, HStack } from "@chakra-ui/react";
+import { Box, SimpleGrid } from "@chakra-ui/react";
 import type { Job, JobStatus } from "../../types/job";
 import { JOB_STATUSES } from "../../utils/job-status";
 import { JobBoardColumn } from "./JobBoardColumn";
@@ -14,33 +14,25 @@ export function JobBoard({
   jobsByStatus,
   onStatusChange,
   onDelete,
-  onEdit
+  onEdit,
 }: Props) {
   return (
-    <Box
-      overflowX="auto"
-      pb="3"
-      px="1"
-      mx="-1"
-      css={{
-        scrollbarWidth: "thin"
-      }}>
-      <HStack align="stretch" gap="5" minW="max-content">
+    <Box>
+      <SimpleGrid
+        columns={{ base: 1, md: 2, lg: 3, xl: 4 }}
+        gap="5"
+        alignItems="start">
         {JOB_STATUSES.map((status) => (
-          <Box
+          <JobBoardColumn
             key={status}
-            w={{ base: "300px", md: "340px", xl: "360px" }}
-            flexShrink={0}>
-            <JobBoardColumn
-              status={status}
-              jobs={jobsByStatus[status]}
-              onStatusChange={onStatusChange}
-              onDelete={onDelete}
-              onEdit={onEdit}
-            />
-          </Box>
+            status={status}
+            jobs={jobsByStatus[status]}
+            onStatusChange={onStatusChange}
+            onDelete={onDelete}
+            onEdit={onEdit}
+          />
         ))}
-      </HStack>
+      </SimpleGrid>
     </Box>
   );
 }

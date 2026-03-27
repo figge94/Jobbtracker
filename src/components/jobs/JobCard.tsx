@@ -1,21 +1,24 @@
 import { useState } from "react";
 import {
-  Badge,
   Box,
+  Button,
   Card,
+  Dialog,
   Flex,
-  HStack,
   Link,
+  Portal,
   Stack,
-  Text
+  Text,
 } from "@chakra-ui/react";
 import type { Job, JobStatus } from "../../types/job";
-import { getStatusColor, getStatusLabel } from "../../utils/job-status";
+import { getStatusColor } from "../../utils/job-status";
 import { JobStatusSelect } from "./JobStatusSelect";
 import { JobDeadline } from "./JobDeadline";
 import { JobMeta } from "./JobMeta";
 import { JobActions } from "./JobActions";
-import { motion, useMotionValue } from "framer-motion";
+import { motion, useMotionValue, animate } from "framer-motion";
+import { toaster } from "../ui/toaster";
+import { LuExternalLink } from "react-icons/lu";
 
 const MotionBox = motion.create(Box);
 
@@ -32,11 +35,28 @@ export function JobCard({
   onDelete,
   onStatusChange,
   onEdit,
-  compact = false
+  compact = false,
 }: Props) {
   const [isDragging, setIsDragging] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const x = useMotionValue(0);
   const swipeEnabled = !compact;
+
+  const openDeleteDialog = () => {
+    setDeleteDialogOpen(true);
+    animate(x, 0);
+  };
+
+  const handleDelete = () => {
+    onDelete(job.id);
+    setDeleteDialogOpen(false);
+
+    toaster.create({
+      title: "Jobb borttaget",
+      description: `"${job.title}" togs bort`,
+      type: "success",
+    });
+  };
 
   return (
     <Box position="relative">
@@ -76,9 +96,9 @@ export function JobCard({
           setIsDragging(false);
 
           if (swipeEnabled && info.offset.x < -120) {
-            if (window.confirm(`Ta bort "${job.title}"?`)) {
-              onDelete(job.id);
-            }
+            openDeleteDialog();
+          } else {
+            animate(x, 0);
           }
         }}>
         <Card.Root
@@ -87,50 +107,41 @@ export function JobCard({
           overflow="hidden"
           bg="bg.panel"
           transition="0.2s"
-          _hover={{
-            shadow: "md"
-          }}>
-          <Box h="2" bg={`${getStatusColor(job.status)}.400`} />
+          _hover={{ shadow: "md", translateY: "-1px" }}>
+          <Box h="1.5" bg={`${getStatusColor(job.status)}.400`} />
 
           <Card.Body p={compact ? "4" : "5"}>
-            <Stack gap={compact ? "3" : "4"}>
-              <Flex
-                direction={compact ? "column" : "row"}
-                justify="space-between"
-                align={compact ? "stretch" : "start"}
-                gap="4">
-                <Box flex="1">
-                  <HStack gap="2" wrap="wrap" mb="1">
-                    <Badge
-                      colorPalette={getStatusColor(job.status)}
-                      variant="subtle"
-                      px="2"
-                      py="1"
-                      borderRadius="md">
-                      {getStatusLabel(job.status)}
-                    </Badge>
-                  </HStack>
+            <Stack gap={4}>
+              <Flex justify="space-between" align="start" gap="4">
+                <Stack gap="2" flex="1" minW={0}>
+                  <Box>
+                    <Text
+                      fontSize={compact ? "lg" : "xl"}
+                      fontWeight="semibold"
+                      lineHeight="1.25"
+                      truncate>
+                      {job.title}
+                    </Text>
 
-                  <Text
-                    fontSize={compact ? "md" : "lg"}
-                    fontWeight="semibold"
-                    lineHeight="1.3">
-                    {job.title}
-                  </Text>
+                    <Text mt="1" color="fg.muted" fontWeight="medium">
+                      {job.company}
+                    </Text>
+                  </Box>
+                </Stack>
 
-                  <Text mt="1" color="fg.muted" fontWeight="medium">
-                    {job.company}
-                  </Text>
-                </Box>
+                <Stack gap="2" align="end" minW={compact ? "120px" : "180px"}>
+                  <Box w="100%">
+                    <JobStatusSelect
+                      value={job.status}
+                      onChange={(status) => onStatusChange(job.id, status)}
+                    />
+                  </Box>
 
-                <Box minW={compact ? "100%" : "160px"}>
-                  <JobStatusSelect
-                    value={job.status}
-                    onChange={(status) => onStatusChange(job.id, status)}
-                    ariaLabel="Status"
-                    maxW="100%"
+                  <JobActions
+                    onEdit={() => onEdit(job)}
+                    onDelete={openDeleteDialog}
                   />
-                </Box>
+                </Stack>
               </Flex>
 
               <JobMeta
@@ -140,45 +151,69 @@ export function JobCard({
               />
 
               {job.url && (
-                <Box>
-                  <Link
-                    href={job.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    color="blue.500"
-                    fontWeight="semibold"
-                    textDecoration="underline"
-                    textDecorationStyle="dashed"
-                    textUnderlineOffset="6px"
-                    textDecorationThickness="1px">
-                    Öppna annons →
-                  </Link>
-                </Box>
+                <Link
+                  href={job.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  display="inline-flex"
+                  alignItems="center"
+                  gap="1.5"
+                  color="blue.600"
+                  fontWeight="semibold"
+                  _hover={{
+                    color: "blue.500",
+                    textDecoration: "underline",
+                    textUnderlineOffset: "4px",
+                  }}
+                  transition="color 0.2s">
+                  Öppna annons
+                  <Box as={LuExternalLink} boxSize="3.5" />
+                </Link>
               )}
 
-              {job.deadline && (
-                <Box px="3" py="2">
-                  <JobDeadline deadline={job.deadline} compact={compact} />
-                </Box>
-              )}
+              {job.deadline && <JobDeadline deadline={job.deadline} compact />}
 
               {!compact && (
                 <Text fontSize="xs" color="fg.muted">
                   Sparad {new Date(job.createdAt).toLocaleString("sv-SE")}
                 </Text>
               )}
-
-              <Box pt="1">
-                <JobActions
-                  title={job.title}
-                  onEdit={() => onEdit(job)}
-                  onDelete={() => onDelete(job.id)}
-                />
-              </Box>
             </Stack>
           </Card.Body>
         </Card.Root>
       </MotionBox>
+
+      <Dialog.Root
+        open={deleteDialogOpen}
+        onOpenChange={(e: { open: boolean }) => setDeleteDialogOpen(e.open)}>
+        <Portal>
+          <Dialog.Backdrop />
+          <Dialog.Positioner>
+            <Dialog.Content>
+              <Dialog.Header>
+                <Dialog.Title>Ta bort jobb</Dialog.Title>
+              </Dialog.Header>
+
+              <Dialog.Body>
+                Är du säker på att du vill ta bort "{job.title}"?
+              </Dialog.Body>
+
+              <Dialog.Footer>
+                <Stack direction="row">
+                  <Button
+                    variant="ghost"
+                    onClick={() => setDeleteDialogOpen(false)}>
+                    Avbryt
+                  </Button>
+                  <Button colorPalette="red" onClick={handleDelete}>
+                    Ta bort
+                  </Button>
+                </Stack>
+              </Dialog.Footer>
+            </Dialog.Content>
+          </Dialog.Positioner>
+        </Portal>
+      </Dialog.Root>
     </Box>
   );
 }

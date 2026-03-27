@@ -13,13 +13,13 @@ export function ProfileDrawer({
   onClose,
   totalJobs,
   appliedJobs,
-  interviewJobs
+  interviewJobs,
 }: Props) {
   return (
     <Drawer.Root open={open} onOpenChange={(e) => !e.open && onClose()}>
       <Drawer.Backdrop />
       <Drawer.Positioner>
-        <Drawer.Content borderTopRadius="2xl">
+        <Drawer.Content>
           <Drawer.Header>
             <Drawer.Title>Profil</Drawer.Title>
           </Drawer.Header>

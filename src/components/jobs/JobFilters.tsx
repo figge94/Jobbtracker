@@ -14,12 +14,10 @@ export function JobFilters({
   statusFilter,
   onStatusFilterChange,
   viewMode,
-  onViewModeChange
+  onViewModeChange,
 }: Props) {
   return (
-    <HStack
-      align="center"
-      gap="4"
+    <Box
       p="4"
       borderWidth="1px"
       borderRadius="2xl"
@@ -27,14 +25,15 @@ export function JobFilters({
       borderColor="gray.200"
       _dark={{
         bg: "whiteAlpha.50",
-        borderColor: "whiteAlpha.200"
+        borderColor: "whiteAlpha.200",
       }}>
-      {viewMode === "list" && (
-        <Field.Root maxW="220px">
-          <Field.Label color="fg.muted">Filtrera på status</Field.Label>
+      <Field.Root>
+        <Field.Label color="fg.muted">Filtrera på status</Field.Label>
 
-          <NativeSelect.Root>
+        <HStack align="center" gap="3" w="100%">
+          <NativeSelect.Root flex="1">
             <NativeSelect.Field
+              w="100%"
               value={statusFilter}
               onChange={(e) =>
                 onStatusFilterChange(e.target.value as JobStatus | "alla")
@@ -49,12 +48,12 @@ export function JobFilters({
 
             <NativeSelect.Indicator />
           </NativeSelect.Root>
-        </Field.Root>
-      )}
 
-      <Box ml="auto">
-        <JobViewToggle viewMode={viewMode} onChange={onViewModeChange} />
-      </Box>
-    </HStack>
+          <Box ml="auto">
+            <JobViewToggle viewMode={viewMode} onChange={onViewModeChange} />
+          </Box>
+        </HStack>
+      </Field.Root>
+    </Box>
   );
 }
