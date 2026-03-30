@@ -1,15 +1,24 @@
-import { Drawer, Stack, Text, Card, SimpleGrid } from '@chakra-ui/react';
+import { Drawer, Stack, Text, Card, SimpleGrid, Button } from '@chakra-ui/react';
 import type { JobStatus } from '../../types/job';
 import { JOB_STATUSES, getStatusColor, getStatusLabel } from '../../utils/job-status';
 
 type Props = {
   open: boolean;
   onClose: () => void;
+  onOpenHistory: () => void;
   stats: Record<JobStatus, number>;
+  cityStats: [string, number][];
   totalJobs: number;
 };
 
-export default function ProfileDrawer({ open, onClose, stats, totalJobs }: Props) {
+export default function ProfileDrawer({
+  open,
+  onClose,
+  onOpenHistory,
+  stats,
+  cityStats,
+  totalJobs,
+}: Props) {
   const appliedJobs = stats.sokt;
   const interviewJobs = stats.intervju;
 
@@ -24,9 +33,6 @@ export default function ProfileDrawer({ open, onClose, stats, totalJobs }: Props
 
           <Drawer.Body>
             <Stack gap="6">
-              {/* header */}
-              ...
-              {/* summary */}
               <Card.Root variant="subtle" borderRadius="2xl">
                 <Card.Body p="3">
                   <Text fontSize="sm" color="fg.muted">
@@ -38,7 +44,7 @@ export default function ProfileDrawer({ open, onClose, stats, totalJobs }: Props
                   </Text>
                 </Card.Body>
               </Card.Root>
-              {/* stats */}
+
               <SimpleGrid columns={2} gap="3">
                 {JOB_STATUSES.map((status) => (
                   <Card.Root
@@ -63,6 +69,34 @@ export default function ProfileDrawer({ open, onClose, stats, totalJobs }: Props
                   </Card.Root>
                 ))}
               </SimpleGrid>
+
+              <Card.Root variant="outline" borderRadius="2xl">
+                <Card.Body p="3">
+                  <Stack gap="3">
+                    <Text fontSize="sm" fontWeight="medium">
+                      Sökta jobb per stad
+                    </Text>
+
+                    {cityStats.length === 0 ? (
+                      <Text fontSize="sm" color="fg.muted">
+                        Inga sökta jobb ännu.
+                      </Text>
+                    ) : (
+                      <Stack gap="2">
+                        {cityStats.map(([city, count]) => (
+                          <Text key={city} fontSize="sm">
+                            {city}: {count}
+                          </Text>
+                        ))}
+                      </Stack>
+                    )}
+                  </Stack>
+                </Card.Body>
+              </Card.Root>
+
+              <Button onClick={onOpenHistory} variant="outline">
+                Visa historik
+              </Button>
             </Stack>
           </Drawer.Body>
 

@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
-import type { Job, JobStatus } from "../types/job";
-import { JOB_STATUSES } from "../utils/job-status";
+import { useEffect, useMemo, useState } from 'react';
+import type { Job, JobStatus } from '../types/job';
+import { JOB_STATUSES } from '../utils/job-status';
 
-const STORAGE_KEY = "jobbtracker.jobs";
+const STORAGE_KEY = 'jobbtracker.jobs';
 
 function loadJobs(): Job[] {
   const raw = localStorage.getItem(STORAGE_KEY);
@@ -18,8 +18,8 @@ function loadJobs(): Job[] {
 
 export function useJobs() {
   const [jobs, setJobs] = useState<Job[]>(() => loadJobs());
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<JobStatus | "alla">("alla");
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<JobStatus | 'alla'>('alla');
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(jobs));
@@ -34,9 +34,7 @@ export function useJobs() {
   }
 
   function changeStatus(id: string, status: JobStatus) {
-    setJobs((prev) =>
-      prev.map((job) => (job.id === id ? { ...job, status } : job)),
-    );
+    setJobs((prev) => prev.map((job) => (job.id === id ? { ...job, status } : job)));
   }
 
   const filteredJobs = useMemo(() => {
@@ -44,35 +42,40 @@ export function useJobs() {
       .filter(
         (job) =>
           job.title.toLowerCase().includes(search.toLowerCase()) ||
-          job.company.toLowerCase().includes(search.toLowerCase()),
+          job.company.toLowerCase().includes(search.toLowerCase())
       )
-      .filter((job) =>
-        statusFilter === "alla" ? true : job.status === statusFilter,
-      );
+      .filter((job) => (statusFilter === 'alla' ? true : job.status === statusFilter));
   }, [jobs, search, statusFilter]);
 
   const stats = useMemo(() => {
     return Object.fromEntries(
-      JOB_STATUSES.map((status) => [
-        status,
-        jobs.filter((job) => job.status === status).length,
-      ]),
+      JOB_STATUSES.map((status) => [status, jobs.filter((job) => job.status === status).length])
     ) as Record<JobStatus, number>;
+  }, [jobs]);
+
+  const cityStats = useMemo(() => {
+    const appliedJobs = jobs.filter((job) => job.status === 'sokt');
+
+    const counts: Record<string, number> = {};
+
+    for (const job of appliedJobs) {
+      const city = job.city.trim();
+      if (!city) continue;
+
+      counts[city] = (counts[city] ?? 0) + 1;
+    }
+
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]);
   }, [jobs]);
 
   const jobsByStatus = useMemo(() => {
     return Object.fromEntries(
-      JOB_STATUSES.map((status) => [
-        status,
-        filteredJobs.filter((job) => job.status === status),
-      ]),
+      JOB_STATUSES.map((status) => [status, filteredJobs.filter((job) => job.status === status)])
     ) as Record<JobStatus, Job[]>;
   }, [filteredJobs]);
 
   function updateJob(updatedJob: Job) {
-    setJobs((prev) =>
-      prev.map((job) => (job.id === updatedJob.id ? updatedJob : job)),
-    );
+    setJobs((prev) => prev.map((job) => (job.id === updatedJob.id ? updatedJob : job)));
   }
 
   return {
@@ -83,6 +86,7 @@ export function useJobs() {
     setStatusFilter,
     filteredJobs,
     stats,
+    cityStats,
     jobsByStatus,
     addJob,
     deleteJob,
