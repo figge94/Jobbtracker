@@ -7,7 +7,7 @@ const JobForm = lazy(() => import('./form/JobForm'));
 type Props = {
   open: boolean;
   onClose: () => void;
-  onAdd: (job: Job) => void;
+  onAdd: (job: Job) => boolean;
   onUpdate: (job: Job) => void;
   editingJob: Job | null;
 };
@@ -44,8 +44,11 @@ export default function JobModal({ open, onClose, onAdd, onUpdate, editingJob }:
                   isEditing={isEditing}
                   onClose={onClose}
                   onAdd={(job) => {
-                    onAdd(job);
-                    onClose();
+                    const wasAdded = onAdd(job);
+                    if (wasAdded) {
+                      onClose();
+                    }
+                    return wasAdded;
                   }}
                   editingJob={editingJob}
                   onUpdate={(job) => {

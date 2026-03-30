@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import type { Job, JobStatus } from "../types/job";
-import { toaster } from "../components/ui/toaster";
+import { useEffect, useState } from 'react';
+import type { Job, JobStatus } from '../types/job';
+import { toaster } from '../components/ui/toaster';
 
 type Props = {
-  onAdd: (job: Job) => void;
+  onAdd: (job: Job) => boolean;
   editingJob: Job | null;
   onUpdate: (job: Job) => void;
   onCancelEdit: () => void;
 };
 
-type AdSource = "jobsearch" | "historical";
+type AdSource = 'jobsearch' | 'historical';
 
 type FetchAdResult = {
   data: any;
@@ -17,12 +17,12 @@ type FetchAdResult = {
 };
 
 function formatDate(value: string | Date | null | undefined): string {
-  if (!value) return "";
+  if (!value) return '';
 
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "";
+  if (Number.isNaN(date.getTime())) return '';
 
-  return date.toISOString().split("T")[0];
+  return date.toISOString().split('T')[0];
 }
 
 function getAdIdFromUrl(url: string): string | null {
@@ -33,11 +33,11 @@ function getAdIdFromUrl(url: string): string | null {
 async function fetchAdById(adId: string): Promise<FetchAdResult> {
   const sources: Array<{ source: AdSource; url: string }> = [
     {
-      source: "jobsearch",
+      source: 'jobsearch',
       url: `https://jobsearch.api.jobtechdev.se/ad/${adId}`,
     },
     {
-      source: "historical",
+      source: 'historical',
       url: `https://historical.api.jobtechdev.se/ad/${adId}`,
     },
   ];
@@ -55,67 +55,62 @@ async function fetchAdById(adId: string): Promise<FetchAdResult> {
     }
   }
 
-  throw new Error("Annonsen hittades inte i aktuellt eller historiskt API");
+  throw new Error('Annonsen hittades inte i aktuellt eller historiskt API');
 }
 
-export function useJobForm({
-  onAdd,
-  editingJob,
-  onUpdate,
-  onCancelEdit,
-}: Props) {
-  const [mode, setMode] = useState<"link" | "manual">("link");
+export function useJobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props) {
+  const [mode, setMode] = useState<'link' | 'manual'>('link');
 
-  const [company, setCompany] = useState("");
-  const [title, setTitle] = useState("");
-  const [url, setUrl] = useState("");
-  const [city, setCity] = useState("");
-  const [employmentType, setEmploymentType] = useState("");
-  const [occupation, setOccupation] = useState("");
-  const [status, setStatus] = useState<JobStatus>("vill_soka");
-  const [deadline, setDeadline] = useState("");
+  const [company, setCompany] = useState('');
+  const [title, setTitle] = useState('');
+  const [url, setUrl] = useState('');
+  const [city, setCity] = useState('');
+  const [employmentType, setEmploymentType] = useState('');
+  const [occupation, setOccupation] = useState('');
+  const [status, setStatus] = useState<JobStatus>('vill_soka');
+  const [deadline, setDeadline] = useState('');
   const [isFetching, setIsFetching] = useState(false);
   const [adSource, setAdSource] = useState<AdSource | null>(null);
-  const [appliedAt, setAppliedAt] = useState("");
+  const [appliedAt, setAppliedAt] = useState('');
 
   const isEditing = editingJob !== null;
-  const isValid = company.trim() !== "" && title.trim() !== "";
-  const canFetch = url.trim() !== "" && !isFetching && !isEditing;
-  const fieldsLocked = mode === "link" && adSource !== null && !isEditing;
+  const isValid = company.trim() !== '' && title.trim() !== '';
+  const canFetch = url.trim() !== '' && !isFetching && !isEditing;
+  const fieldsLocked = mode === 'link' && adSource !== null && !isEditing;
 
   const lockedStyles = fieldsLocked
     ? {
-        bg: "gray.100",
-        _dark: { bg: "gray.900" },
-        cursor: "not-allowed",
+        bg: 'gray.100',
+        _dark: { bg: 'gray.900' },
+        cursor: 'not-allowed',
         opacity: 0.8,
-        borderColor: "gray.200",
+        borderColor: 'gray.200',
       }
     : {};
 
   function resetForm() {
-    setCompany("");
-    setTitle("");
-    setUrl("");
-    setCity("");
-    setEmploymentType("");
-    setOccupation("");
-    setStatus("vill_soka");
-    setDeadline("");
-    setAppliedAt("");
+    setCompany('');
+    setTitle('');
+    setUrl('');
+    setCity('');
+    setEmploymentType('');
+    setOccupation('');
+    setStatus('vill_soka');
+    setDeadline('');
+    setAppliedAt('');
     setAdSource(null);
     setIsFetching(false);
   }
 
   useEffect(() => {
     if (editingJob) {
-      setMode("manual");
-      setCompany(editingJob.company ?? "");
-      setTitle(editingJob.title ?? "");
-      setUrl(editingJob.url ?? "");
-      setCity(editingJob.city ?? "");
-      setEmploymentType(editingJob.employmentType ?? "");
-      setOccupation(editingJob.occupation ?? "");
+      setMode('manual');
+      setCompany(editingJob.company ?? '');
+      setTitle(editingJob.title ?? '');
+      setUrl(editingJob.url ?? '');
+      setCity(editingJob.city ?? '');
+      setEmploymentType(editingJob.employmentType ?? '');
+      setOccupation(editingJob.occupation ?? '');
       setStatus(editingJob.status);
       setDeadline(formatDate(editingJob.deadline));
       setAppliedAt(formatDate(editingJob.appliedAt));
@@ -124,7 +119,7 @@ export function useJobForm({
     }
 
     resetForm();
-    setMode("link");
+    setMode('link');
   }, [editingJob]);
 
   async function handleFetchInfo() {
@@ -137,9 +132,9 @@ export function useJobForm({
 
       if (!adId) {
         toaster.create({
-          title: "Ogiltig länk",
-          description: "Kunde inte hitta annons-id i länken.",
-          type: "error",
+          title: 'Ogiltig länk',
+          description: 'Kunde inte hitta annons-id i länken.',
+          type: 'error',
           closable: true,
         });
         return;
@@ -152,32 +147,28 @@ export function useJobForm({
         data.workplace_address?.city ??
         data.workplace_address?.region ??
         data.application_details?.location ??
-        "";
+        '';
 
       const occupationValue =
-        data.occupation?.label ??
-        data.occupation_group?.label ??
-        data.profession?.label ??
-        "";
+        data.occupation?.label ?? data.occupation_group?.label ?? data.profession?.label ?? '';
 
-      const deadlineValue =
-        data.last_publication_date ?? data.application_deadline ?? "";
+      const deadlineValue = data.last_publication_date ?? data.application_deadline ?? '';
 
-      setTitle(data.headline ?? "");
-      setCompany(data.employer?.name ?? "");
+      setTitle(data.headline ?? '');
+      setCompany(data.employer?.name ?? '');
       setCity(cityValue);
       setDeadline(formatDate(deadlineValue));
-      setEmploymentType(data.working_hours_type?.label ?? "");
+      setEmploymentType(data.working_hours_type?.label ?? '');
       setOccupation(occupationValue);
       setAdSource(source);
 
       toaster.create({
-        title: "Annons hämtad",
+        title: 'Annons hämtad',
         description:
-          source === "historical"
-            ? "Information hämtades från historiskt arkiv."
-            : "Informationen fylldes i automatiskt.",
-        type: "success",
+          source === 'historical'
+            ? 'Information hämtades från historiskt arkiv.'
+            : 'Informationen fylldes i automatiskt.',
+        type: 'success',
         closable: true,
       });
     } catch (error) {
@@ -185,12 +176,9 @@ export function useJobForm({
       setAdSource(null);
 
       toaster.create({
-        title: "Kunde inte hämta annonsen",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Ett oväntat fel inträffade.",
-        type: "error",
+        title: 'Kunde inte hämta annonsen',
+        description: error instanceof Error ? error.message : 'Ett oväntat fel inträffade.',
+        type: 'error',
         closable: true,
       });
     } finally {
@@ -203,9 +191,9 @@ export function useJobForm({
 
     if (!company.trim() || !title.trim()) {
       toaster.create({
-        title: "Saknar information",
-        description: "Fyll i företag och titel.",
-        type: "error",
+        title: 'Saknar information',
+        description: 'Fyll i företag och titel.',
+        type: 'error',
         closable: true,
       });
       return;
@@ -244,9 +232,9 @@ export function useJobForm({
       onUpdate(jobData);
 
       toaster.create({
-        title: "Jobb uppdaterat",
+        title: 'Jobb uppdaterat',
         description: `${jobData.title} uppdaterades.`,
-        type: "success",
+        type: 'success',
         closable: true,
       });
 
@@ -254,17 +242,27 @@ export function useJobForm({
       return;
     }
 
-    onAdd(jobData);
+    const wasAdded = onAdd(jobData);
+
+    if (!wasAdded) {
+      toaster.create({
+        title: 'Jobbet finns redan',
+        description: `${jobData.title} hos ${jobData.company} är redan sparat.`,
+        type: 'warning',
+        closable: true,
+      });
+      return;
+    }
 
     toaster.create({
-      title: "Jobb sparat",
+      title: 'Jobb sparat',
       description: `${jobData.title} hos ${jobData.company} lades till.`,
-      type: "success",
+      type: 'success',
       closable: true,
     });
 
     resetForm();
-    setMode("link");
+    setMode('link');
   }
 
   return {

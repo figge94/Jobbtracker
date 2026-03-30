@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { Box, Stack } from "@chakra-ui/react";
-import type { Job } from "../../../types/job";
-import { useJobForm } from "../../../hooks/useJobForm";
-import { JobAdFetchSection } from "./JobAdFetchSection";
-import { JobDetailsSection } from "./JobDetailsSection";
-import { JobFormActions } from "./JobFormActions";
-import { JobFormHeader } from "./JobFormHeader";
-import { JobStatusSection } from "./JobStatusSection";
+import { Box, Stack } from '@chakra-ui/react';
+import type { Job } from '../../../types/job';
+import { useJobForm } from '../../../hooks/useJobForm';
+import { JobAdFetchSection } from './JobAdFetchSection';
+import { JobDetailsSection } from './JobDetailsSection';
+import { JobFormActions } from './JobFormActions';
+import { JobFormHeader } from './JobFormHeader';
+import { JobStatusSection } from './JobStatusSection';
 
 type Props = {
   isEditing: boolean;
   onClose: () => void;
-  onAdd: (job: Job) => void;
+  onAdd: (job: Job) => boolean;
   editingJob: Job | null;
   onUpdate: (job: Job) => void;
   onCancelEdit: () => void;
@@ -57,17 +57,12 @@ export default function JobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: P
   });
 
   return (
-    <Box px={{ base: "4", md: "6" }} py="5">
+    <Box px={{ base: '4', md: '6' }} py="5">
       <form onSubmit={handleSubmit}>
         <Stack gap="8">
-          <JobFormHeader
-            isEditing={isEditing}
-            mode={mode}
-            setMode={setMode}
-            status={status}
-          />
+          <JobFormHeader isEditing={isEditing} mode={mode} setMode={setMode} status={status} />
 
-          {mode === "link" && !isEditing && (
+          {mode === 'link' && !isEditing && (
             <JobAdFetchSection
               url={url}
               setUrl={setUrl}
@@ -92,7 +87,7 @@ export default function JobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: P
             setEmploymentType={setEmploymentType}
             fieldsLocked={fieldsLocked}
             lockedStyles={lockedStyles}
-            autoFocusTitle={mode === "manual" || isEditing}
+            autoFocusTitle={mode === 'manual' || isEditing}
           />
 
           <JobStatusSection

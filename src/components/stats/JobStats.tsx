@@ -1,4 +1,4 @@
-import { Card, Heading, SimpleGrid, Stack, Stat, Text } from '@chakra-ui/react';
+import { Card, SimpleGrid, Stack, Stat } from '@chakra-ui/react';
 import type { JobStatus } from '../../types/job';
 import { JOB_STATUSES, getStatusColor, getStatusLabel } from '../../utils/job-status';
 
@@ -7,7 +7,7 @@ type Props = {
   cityStats: [string, number][];
 };
 
-export default function JobStats({ stats, cityStats }: Props) {
+export default function JobStats({ stats }: Props) {
   return (
     <Stack gap="4">
       <SimpleGrid columns={{ base: 2, md: 4 }} gap="3">
@@ -53,26 +53,6 @@ export default function JobStats({ stats, cityStats }: Props) {
           );
         })}
       </SimpleGrid>
-
-      <Card.Root borderWidth="1px" borderRadius="2xl" shadow="sm">
-        <Card.Body>
-          <Stack gap="3">
-            <Heading size="sm">Sökta jobb per stad</Heading>
-
-            {cityStats.length === 0 ? (
-              <Text color="gray.500">Inga sökta jobb ännu.</Text>
-            ) : (
-              <Stack gap="1">
-                {cityStats.map(([city, count]) => (
-                  <Text key={city}>
-                    {city}: {count}
-                  </Text>
-                ))}
-              </Stack>
-            )}
-          </Stack>
-        </Card.Body>
-      </Card.Root>
     </Stack>
   );
 }

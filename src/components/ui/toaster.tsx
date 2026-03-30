@@ -1,98 +1,143 @@
-"use client";
+'use client';
 
 import {
   Box,
-  HStack,
   Portal,
   Spinner,
   Stack,
-  Text,
-  Toast,
   Toaster as ChakraToaster,
+  Toast,
   createToaster,
-} from "@chakra-ui/react";
+} from '@chakra-ui/react';
 
 export const toaster = createToaster({
-  placement: "bottom",
+  placement: 'bottom',
   pauseOnPageIdle: true,
 });
+
+function getToastStyles(type?: string) {
+  switch (type) {
+    case 'success':
+      return {
+        bg: 'rgba(34, 197, 94, 0.18)',
+        color: 'green.900',
+        borderColor: 'rgba(34, 197, 94, 0.35)',
+        darkBg: 'rgba(34, 197, 94, 0.16)',
+        darkColor: 'green.100',
+        darkBorderColor: 'rgba(34, 197, 94, 0.28)',
+      };
+    case 'error':
+      return {
+        bg: 'rgba(239, 68, 68, 0.18)',
+        color: 'red.900',
+        borderColor: 'rgba(239, 68, 68, 0.35)',
+        darkBg: 'rgba(239, 68, 68, 0.16)',
+        darkColor: 'red.100',
+        darkBorderColor: 'rgba(239, 68, 68, 0.28)',
+      };
+    case 'warning':
+      return {
+        bg: 'rgba(249, 115, 22, 0.18)',
+        color: 'orange.900',
+        borderColor: 'rgba(249, 115, 22, 0.35)',
+        darkBg: 'rgba(249, 115, 22, 0.16)',
+        darkColor: 'orange.100',
+        darkBorderColor: 'rgba(249, 115, 22, 0.28)',
+      };
+    case 'info':
+      return {
+        bg: 'rgba(59, 130, 246, 0.18)',
+        color: 'blue.900',
+        borderColor: 'rgba(59, 130, 246, 0.35)',
+        darkBg: 'rgba(59, 130, 246, 0.16)',
+        darkColor: 'blue.100',
+        darkBorderColor: 'rgba(59, 130, 246, 0.28)',
+      };
+    case 'loading':
+      return {
+        bg: 'rgba(107, 114, 128, 0.22)',
+        color: 'gray.900',
+        borderColor: 'rgba(107, 114, 128, 0.35)',
+        darkBg: 'rgba(255, 255, 255, 0.08)',
+        darkColor: 'white',
+        darkBorderColor: 'rgba(255, 255, 255, 0.16)',
+      };
+    default:
+      return {
+        bg: 'rgba(107, 114, 128, 0.18)',
+        color: 'gray.900',
+        borderColor: 'rgba(107, 114, 128, 0.3)',
+        darkBg: 'rgba(255, 255, 255, 0.08)',
+        darkColor: 'white',
+        darkBorderColor: 'rgba(255, 255, 255, 0.16)',
+      };
+  }
+}
 
 export const Toaster = () => {
   return (
     <Portal>
-      <ChakraToaster toaster={toaster} insetInline={{ mdDown: "4" }}>
-        {(toast) => (
-          <Toast.Root
-            width={{ base: "full", md: "sm" }}
-            borderRadius="xl"
-            borderWidth="1px"
-            shadow="lg"
-            px="4"
-            py="3"
-            color="gray.800"
-            borderColor="gray.200"
-            bgGradient="to-r"
-            gradientFrom="green.400"
-            gradientTo="blue.400"
-            _dark={{
-              bg: "gray.800",
-              color: "white",
-              borderColor: "gray.700",
-            }}
-          >
-            <HStack align="start" gap="3" width="full">
-              <Box pt="1">
-                {toast.type === "loading" ? (
-                  <Spinner size="md" color="blue.500" />
-                ) : (
-                  <Toast.Indicator />
-                )}
-              </Box>
+      <ChakraToaster toaster={toaster} insetInline={{ mdDown: '4' }}>
+        {(toast) => {
+          const styles = getToastStyles(toast.type);
 
-              <Stack gap="1" flex="1" maxWidth="100%">
-                {toast.title && (
-                  <Toast.Title fontWeight="semibold" lineHeight="1.2">
-                    {toast.title}
-                  </Toast.Title>
-                )}
+          return (
+            <Toast.Root
+              width={{ base: 'calc(100vw - 32px)', md: 'sm' }}
+              mx="auto"
+              borderRadius="2xl"
+              borderWidth="1px"
+              borderColor={styles.borderColor}
+              bg={styles.bg}
+              color={styles.color}
+              backdropFilter="blur(16px)"
+              boxShadow="0 12px 30px rgba(0,0,0,0.18)"
+              _dark={{
+                bg: styles.darkBg,
+                color: styles.darkColor,
+                borderColor: styles.darkBorderColor,
+              }}
+            >
+              <Box px="4" py="3" w="100%">
+                <Stack direction="row" gap="3" align="start">
+                  {toast.type === 'loading' ? (
+                    <Spinner size="sm" mt="1" />
+                  ) : (
+                    <Toast.Indicator mt="1" />
+                  )}
 
-                {toast.description && (
-                  <Toast.Description>
-                    <Text
+                  <Stack gap="1" flex="1" maxWidth="100%">
+                    {toast.title && <Toast.Title fontWeight="bold">{toast.title}</Toast.Title>}
+
+                    {toast.description && (
+                      <Toast.Description opacity={0.85}>{toast.description}</Toast.Description>
+                    )}
+                  </Stack>
+
+                  {toast.action && (
+                    <Toast.ActionTrigger
+                      borderRadius="lg"
+                      px="3"
+                      py="1"
                       fontSize="sm"
-                      color="gray.600"
-                      _dark={{ color: "gray.300" }}
+                      fontWeight="medium"
+                      bg="whiteAlpha.300"
+                      _hover={{ bg: 'whiteAlpha.400' }}
+                      _dark={{
+                        bg: 'whiteAlpha.200',
+                        _hover: { bg: 'whiteAlpha.300' },
+                      }}
                     >
-                      {toast.description}
-                    </Text>
-                  </Toast.Description>
-                )}
-              </Stack>
+                      {toast.action.label}
+                    </Toast.ActionTrigger>
+                  )}
 
-              <HStack gap="2" align="start">
-                {toast.action && (
-                  <Toast.ActionTrigger
-                    px="3"
-                    py="1.5"
-                    borderRadius="md"
-                    fontSize="sm"
-                    fontWeight="medium"
-                    bg="blackAlpha.50"
-                    _hover={{ bg: "blackAlpha.100" }}
-                    _dark={{
-                      bg: "whiteAlpha.100",
-                      _hover: { bg: "whiteAlpha.200" },
-                    }}
-                  >
-                    {toast.action.label}
-                  </Toast.ActionTrigger>
-                )}
-
-                {toast.closable && <Toast.CloseTrigger mt="1" />}
-              </HStack>
-            </HStack>
-          </Toast.Root>
-        )}
+                  {toast.closable && <Toast.CloseTrigger />}
+                </Stack>
+              </Box>
+            </Toast.Root>
+          );
+        }}
       </ChakraToaster>
     </Portal>
   );

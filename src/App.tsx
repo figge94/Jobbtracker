@@ -1,4 +1,4 @@
-import { Suspense, lazy, useMemo, useState } from 'react';
+import { Suspense, lazy, useEffect, useMemo, useState } from 'react';
 import { Box, Button, Container, Heading, Stack, useDisclosure } from '@chakra-ui/react';
 import { BottomNav } from './components/layout/BottomNav';
 import { AppHeader } from './components/AppHeader';
@@ -10,7 +10,7 @@ import type { Job, JobStatus } from './types/job';
 import { groupJobsByMonth } from './utils/job-grouping';
 import { JOB_STATUSES } from './utils/job-status';
 import { PwaUpdatePrompt } from './components/PwaUpdatePrompt';
-import { Toaster } from './components/ui/toaster';
+import { Toaster, toaster } from './components/ui/toaster';
 
 const ProfileDrawer = lazy(() => import('./components/profile/ProfileDrawer'));
 const SettingsDrawer = lazy(() => import('./components/settings/SettingsDrawer'));
@@ -24,16 +24,20 @@ function groupJobsByStatus<T extends { status: JobStatus }>(jobs: T[]) {
   ) as Record<JobStatus, T[]>;
 }
 
+function getDaysLeft(deadline: string) {
+  return Math.ceil((new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+}
+
 export default function App() {
   const {
     jobs,
-    cityStats,
     search,
     setSearch,
     statusFilter,
     setStatusFilter,
     filteredJobs,
     stats,
+    cityStats,
     addJob,
     updateJob,
     deleteJob,
@@ -50,6 +54,47 @@ export default function App() {
   const settingsDrawer = useDisclosure();
 
   const jobsByMonth = useMemo(() => groupJobsByMonth(filteredJobs), [filteredJobs]);
+
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
+    const storageKey = `jobbtracker.deadline-notices.${today}`;
+
+    const shownToday = new Set<string>(JSON.parse(localStorage.getItem(storageKey) ?? '[]'));
+
+    const jobsToNotify = jobs.filter((job) => {
+      if (!job.deadline || job.status !== 'vill_soka') return false;
+
+      const daysLeft = getDaysLeft(job.deadline);
+      if (daysLeft < 0 || daysLeft > 3) return false;
+
+      const uniqueKey = job.adId ?? job.id;
+      return !shownToday.has(uniqueKey);
+    });
+
+    if (jobsToNotify.length === 0) return;
+
+    const nextShown = new Set(shownToday);
+
+    jobsToNotify.forEach((job) => {
+      if (!job.deadline) return;
+
+      const daysLeft = getDaysLeft(job.deadline);
+
+      toaster.create({
+        title: 'Deadline närmar sig',
+        description:
+          daysLeft === 0
+            ? `${job.title} hos ${job.company} går ut idag.`
+            : `${job.title} hos ${job.company} går ut om ${daysLeft} dagar.`,
+        type: 'warning',
+        closable: true,
+      });
+
+      nextShown.add(job.adId ?? job.id);
+    });
+
+    localStorage.setItem(storageKey, JSON.stringify([...nextShown]));
+  }, [jobs]);
 
   function handleCreateJob() {
     setEditingJob(null);
