@@ -34,7 +34,8 @@ export function JobStatusSelect({ value, onChange }: Props) {
             bg: `${getStatusColor(value)}.900`,
             color: `${getStatusColor(value)}.200`,
             borderColor: `${getStatusColor(value)}.700`,
-          }}>
+          }}
+        >
           {getStatusLabel(value)}
         </Button>
       </Menu.Trigger>
@@ -46,7 +47,8 @@ export function JobStatusSelect({ value, onChange }: Props) {
               <Menu.Item
                 key={status}
                 value={status}
-                onClick={() => onChange(status)}>
+                onClick={() => onChange(status)}
+              >
                 {getStatusLabel(status)}
               </Menu.Item>
             ))}

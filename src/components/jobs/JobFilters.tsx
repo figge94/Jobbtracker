@@ -26,7 +26,8 @@ export function JobFilters({
       _dark={{
         bg: "whiteAlpha.50",
         borderColor: "whiteAlpha.200",
-      }}>
+      }}
+    >
       <Field.Root>
         <Field.Label color="fg.muted">Filtrera på status</Field.Label>
 
@@ -37,7 +38,8 @@ export function JobFilters({
               value={statusFilter}
               onChange={(e) =>
                 onStatusFilterChange(e.target.value as JobStatus | "alla")
-              }>
+              }
+            >
               <option value="alla">Alla</option>
               {JOB_STATUSES.map((status) => (
                 <option key={status} value={status}>

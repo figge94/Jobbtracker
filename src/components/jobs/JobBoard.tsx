@@ -21,7 +21,8 @@ export function JobBoard({
       <SimpleGrid
         columns={{ base: 1, md: 2, lg: 3, xl: 4 }}
         gap="5"
-        alignItems="start">
+        alignItems="start"
+      >
         {JOB_STATUSES.map((status) => (
           <JobBoardColumn
             key={status}

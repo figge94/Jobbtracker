@@ -4,7 +4,7 @@ export const JOB_STATUSES: JobStatus[] = [
   "vill_soka",
   "sokt",
   "intervju",
-  "avslag"
+  "avslag",
 ];
 
 export function getStatusLabel(status: JobStatus) {

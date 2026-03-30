@@ -6,7 +6,7 @@ import {
   HStack,
   SegmentGroup,
   Stack,
-  Text
+  Text,
 } from "@chakra-ui/react";
 import type { JobStatus } from "../../../types/job";
 import { getStatusColor, getStatusLabel } from "../../../utils/job-status";
@@ -39,7 +39,8 @@ export function JobFormHeader({ isEditing, mode, setMode, status }: Props) {
             colorPalette={isEditing ? "orange" : "blue"}
             borderRadius="full"
             px="3"
-            py="1">
+            py="1"
+          >
             {isEditing ? "Redigerar" : "Nytt jobb"}
           </Badge>
 
@@ -48,7 +49,8 @@ export function JobFormHeader({ isEditing, mode, setMode, status }: Props) {
             colorPalette={getStatusColor(status)}
             borderRadius="full"
             px="3"
-            py="1">
+            py="1"
+          >
             {getStatusLabel(status)}
           </Badge>
         </HStack>
@@ -63,12 +65,13 @@ export function JobFormHeader({ isEditing, mode, setMode, status }: Props) {
           bg="bg.muted"
           borderRadius="lg"
           p="1"
-          _dark={{ bg: "whiteAlpha.100" }}>
+          _dark={{ bg: "whiteAlpha.100" }}
+        >
           <SegmentGroup.Indicator borderRadius="md" />
           <SegmentGroup.Items
             items={[
               { value: "link", label: "Annonslänk" },
-              { value: "manual", label: "Manuellt" }
+              { value: "manual", label: "Manuellt" },
             ]}
           />
         </SegmentGroup.Root>

@@ -24,7 +24,8 @@ function MetaItem({
       _dark={{ bg: "whiteAlpha.50" }}
       fontSize="xs"
       color="fg.muted"
-      align="center">
+      align="center"
+    >
       <Box opacity={0.7} display="flex" alignItems="center">
         {icon}
       </Box>

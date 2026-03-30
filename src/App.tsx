@@ -79,7 +79,8 @@ export default function App() {
     <Container
       maxW="7xl"
       py={{ base: "6", md: "10" }}
-      pb="calc(120px + env(safe-area-inset-bottom))">
+      pb="calc(120px + env(safe-area-inset-bottom))"
+    >
       <Stack gap="8">
         <AppHeader search={search} onSearchChange={setSearch} />
 
@@ -96,7 +97,8 @@ export default function App() {
           alignSelf="flex-start"
           variant="outline"
           size="sm"
-          onClick={() => setShowJobs((prev) => !prev)}>
+          onClick={() => setShowJobs((prev) => !prev)}
+        >
           {showJobs ? "Dölj jobb" : "Visa jobb"}
         </Button>
 
@@ -107,7 +109,8 @@ export default function App() {
               rounded="xl"
               p="8"
               textAlign="center"
-              color="gray.500">
+              color="gray.500"
+            >
               Inga jobb matchar filtret.
             </Box>
           ) : viewMode === "list" ? (
@@ -152,13 +155,15 @@ export default function App() {
         _dark={{
           bg: "blackAlpha.500",
           borderColor: "whiteAlpha.200",
-        }}>
+        }}
+      >
         <Box
           position="relative"
           minH="72px"
           pb="env(safe-area-inset-bottom)"
           maxW="420px"
-          mx="auto">
+          mx="auto"
+        >
           <IconButton
             aria-label="Profil"
             position="absolute"
@@ -172,7 +177,8 @@ export default function App() {
             _hover={{
               bg: "blackAlpha.50",
               _dark: { bg: "whiteAlpha.100" },
-            }}>
+            }}
+          >
             <Avatar.Root size="sm">
               <Avatar.Fallback name="Victoria" />
             </Avatar.Root>
@@ -208,7 +214,8 @@ export default function App() {
             left="50%"
             top="-34px"
             transform="translateX(-50%)"
-            onClick={handleCreateJob}>
+            onClick={handleCreateJob}
+          >
             <LuPlus size={30} />
           </IconButton>
 
@@ -227,7 +234,8 @@ export default function App() {
               bg: "blackAlpha.50",
               _dark: { bg: "whiteAlpha.100" },
             }}
-            _dark={{ color: "gray.200" }}>
+            _dark={{ color: "gray.200" }}
+          >
             <LuSettings />
           </IconButton>
         </Box>

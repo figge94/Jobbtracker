@@ -57,7 +57,8 @@ export function JobDeadline({ deadline, compact = false }: Props) {
       _dark={{
         borderColor: darkBorderColor,
         bg: darkBg,
-      }}>
+      }}
+    >
       <HStack justify="space-between" align="center" gap="3">
         <HStack gap="2.5" minW={0}>
           <Box
@@ -65,7 +66,8 @@ export function JobDeadline({ deadline, compact = false }: Props) {
             borderRadius="full"
             bg="blackAlpha.100"
             color="fg.muted"
-            _dark={{ bg: "whiteAlpha.100" }}>
+            _dark={{ bg: "whiteAlpha.100" }}
+          >
             <LuClock3 size={13} />
           </Box>
 
@@ -89,7 +91,8 @@ export function JobDeadline({ deadline, compact = false }: Props) {
           fontSize="0.7rem"
           fontWeight="medium"
           whiteSpace="nowrap"
-          flexShrink={0}>
+          flexShrink={0}
+        >
           {daysLeft >= 0 ? `${daysLeft}d` : "Stängd"}
         </Badge>
       </HStack>

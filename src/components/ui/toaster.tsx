@@ -9,12 +9,12 @@ import {
   Text,
   Toast,
   Toaster as ChakraToaster,
-  createToaster
+  createToaster,
 } from "@chakra-ui/react";
 
 export const toaster = createToaster({
   placement: "bottom",
-  pauseOnPageIdle: true
+  pauseOnPageIdle: true,
 });
 
 export const Toaster = () => {
@@ -37,8 +37,9 @@ export const Toaster = () => {
             _dark={{
               bg: "gray.800",
               color: "white",
-              borderColor: "gray.700"
-            }}>
+              borderColor: "gray.700",
+            }}
+          >
             <HStack align="start" gap="3" width="full">
               <Box pt="1">
                 {toast.type === "loading" ? (
@@ -60,7 +61,8 @@ export const Toaster = () => {
                     <Text
                       fontSize="sm"
                       color="gray.600"
-                      _dark={{ color: "gray.300" }}>
+                      _dark={{ color: "gray.300" }}
+                    >
                       {toast.description}
                     </Text>
                   </Toast.Description>
@@ -79,8 +81,9 @@ export const Toaster = () => {
                     _hover={{ bg: "blackAlpha.100" }}
                     _dark={{
                       bg: "whiteAlpha.100",
-                      _hover: { bg: "whiteAlpha.200" }
-                    }}>
+                      _hover: { bg: "whiteAlpha.200" },
+                    }}
+                  >
                     {toast.action.label}
                   </Toast.ActionTrigger>
                 )}

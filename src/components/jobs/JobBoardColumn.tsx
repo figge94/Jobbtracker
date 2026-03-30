@@ -32,7 +32,8 @@ export function JobBoardColumn({
       _dark={{
         bg: "whiteAlpha.50",
         borderColor: "whiteAlpha.200",
-      }}>
+      }}
+    >
       <Box h="1.5" bg={`${color}.400`} />
 
       <Card.Body p="4">
@@ -51,7 +52,8 @@ export function JobBoardColumn({
               px="2"
               py="0.5"
               fontSize="xs"
-              fontWeight="semibold">
+              fontWeight="semibold"
+            >
               {jobs.length}
             </Badge>
           </HStack>
@@ -68,7 +70,8 @@ export function JobBoardColumn({
               _dark={{
                 borderColor: "whiteAlpha.200",
               }}
-              textAlign="center">
+              textAlign="center"
+            >
               <Text fontSize="sm" color="fg.muted">
                 Inga jobb här ännu
               </Text>

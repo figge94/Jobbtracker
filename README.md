@@ -6,11 +6,11 @@ Jobbtracker är en webapp för att hålla koll på jobbansökningar – status, 
 
 - Lägg till jobb manuellt med företag, titel, länk, stad, anställningsform, status och deadline.
 - Hämta information automatiskt från Platsbanken via annonslänk.
-- Sök bland sparade jobb på företag eller titel. 
-- Filtrera jobb efter status. 
+- Sök bland sparade jobb på företag eller titel.
+- Filtrera jobb efter status.
 - Visa jobb antingen som lista eller board.
 - Uppdatera status direkt i gränssnittet.
-- Spara all data lokalt i webbläsaren med `localStorage`. 
+- Spara all data lokalt i webbläsaren med `localStorage`.
 
 ## Statusar
 

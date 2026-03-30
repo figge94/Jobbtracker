@@ -73,7 +73,8 @@ export function JobCard({
           color="white"
           fontWeight="bold"
           opacity={isDragging ? 1 : 0}
-          transition="opacity 0.2s">
+          transition="opacity 0.2s"
+        >
           Ta bort
         </Box>
       )}
@@ -100,14 +101,16 @@ export function JobCard({
           } else {
             animate(x, 0);
           }
-        }}>
+        }}
+      >
         <Card.Root
           variant="outline"
           borderRadius="2xl"
           overflow="hidden"
           bg="bg.panel"
           transition="0.2s"
-          _hover={{ shadow: "md", translateY: "-1px" }}>
+          _hover={{ shadow: "md", translateY: "-1px" }}
+        >
           {!compact && <Box h="1.5" bg={`${getStatusColor(job.status)}.400`} />}
 
           <Card.Body p={compact ? "4" : "5"}>
@@ -119,7 +122,8 @@ export function JobCard({
                       fontSize={compact ? "lg" : "xl"}
                       fontWeight="semibold"
                       lineHeight="1.25"
-                      truncate>
+                      truncate
+                    >
                       {job.title}
                     </Text>
 
@@ -167,7 +171,8 @@ export function JobCard({
                     textDecoration: "underline",
                     textUnderlineOffset: "4px",
                   }}
-                  transition="color 0.2s">
+                  transition="color 0.2s"
+                >
                   Öppna annons
                   <Box as={LuExternalLink} boxSize="3.5" />
                 </Link>
@@ -187,7 +192,8 @@ export function JobCard({
 
       <Dialog.Root
         open={deleteDialogOpen}
-        onOpenChange={(e: { open: boolean }) => setDeleteDialogOpen(e.open)}>
+        onOpenChange={(e: { open: boolean }) => setDeleteDialogOpen(e.open)}
+      >
         <Portal>
           <Dialog.Backdrop />
           <Dialog.Positioner>
@@ -204,7 +210,8 @@ export function JobCard({
                 <Stack direction="row">
                   <Button
                     variant="ghost"
-                    onClick={() => setDeleteDialogOpen(false)}>
+                    onClick={() => setDeleteDialogOpen(false)}
+                  >
                     Avbryt
                   </Button>
                   <Button colorPalette="red" onClick={handleDelete}>

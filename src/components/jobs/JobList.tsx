@@ -22,7 +22,7 @@ export function JobList({ jobs, onDelete, onStatusChange, onEdit }: Props) {
   }
 
   const sortedJobs = [...jobs].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
   const jobsByMonth = groupJobsByMonth(sortedJobs);
@@ -41,8 +41,9 @@ export function JobList({ jobs, onDelete, onStatusChange, onEdit }: Props) {
                 key={job.id}
                 transition="all 0.2s ease"
                 _hover={{
-                  transform: "translateY(-4px) scale(1.01)"
-                }}>
+                  transform: "translateY(-4px) scale(1.01)",
+                }}
+              >
                 <JobCard
                   job={job}
                   onDelete={onDelete}

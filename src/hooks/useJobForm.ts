@@ -34,12 +34,12 @@ async function fetchAdById(adId: string): Promise<FetchAdResult> {
   const sources: Array<{ source: AdSource; url: string }> = [
     {
       source: "jobsearch",
-      url: `https://jobsearch.api.jobtechdev.se/ad/${adId}`
+      url: `https://jobsearch.api.jobtechdev.se/ad/${adId}`,
     },
     {
       source: "historical",
-      url: `https://historical.api.jobtechdev.se/ad/${adId}`
-    }
+      url: `https://historical.api.jobtechdev.se/ad/${adId}`,
+    },
   ];
 
   for (const { source, url } of sources) {
@@ -62,7 +62,7 @@ export function useJobForm({
   onAdd,
   editingJob,
   onUpdate,
-  onCancelEdit
+  onCancelEdit,
 }: Props) {
   const [mode, setMode] = useState<"link" | "manual">("link");
 
@@ -85,12 +85,12 @@ export function useJobForm({
 
   const lockedStyles = fieldsLocked
     ? {
-      bg: "gray.100",
-      _dark: { bg: "gray.900" },
-      cursor: "not-allowed",
-      opacity: 0.8,
-      borderColor: "gray.200"
-    }
+        bg: "gray.100",
+        _dark: { bg: "gray.900" },
+        cursor: "not-allowed",
+        opacity: 0.8,
+        borderColor: "gray.200",
+      }
     : {};
 
   function resetForm() {
@@ -140,7 +140,7 @@ export function useJobForm({
           title: "Ogiltig länk",
           description: "Kunde inte hitta annons-id i länken.",
           type: "error",
-          closable: true
+          closable: true,
         });
         return;
       }
@@ -178,7 +178,7 @@ export function useJobForm({
             ? "Information hämtades från historiskt arkiv."
             : "Informationen fylldes i automatiskt.",
         type: "success",
-        closable: true
+        closable: true,
       });
     } catch (error) {
       console.error(error);
@@ -191,7 +191,7 @@ export function useJobForm({
             ? error.message
             : "Ett oväntat fel inträffade.",
         type: "error",
-        closable: true
+        closable: true,
       });
     } finally {
       setIsFetching(false);
@@ -206,39 +206,39 @@ export function useJobForm({
         title: "Saknar information",
         description: "Fyll i företag och titel.",
         type: "error",
-        closable: true
+        closable: true,
       });
       return;
     }
 
     const jobData: Job = editingJob
       ? {
-        ...editingJob,
-        company: company.trim(),
-        title: title.trim(),
-        url: url.trim(),
-        city: city.trim(),
-        employmentType: employmentType.trim(),
-        occupation: occupation.trim(),
-        status,
-        deadline: formatDate(deadline),
-        appliedAt: formatDate(appliedAt),
-        adId: getAdIdFromUrl(url) ?? editingJob.adId
-      }
+          ...editingJob,
+          company: company.trim(),
+          title: title.trim(),
+          url: url.trim(),
+          city: city.trim(),
+          employmentType: employmentType.trim(),
+          occupation: occupation.trim(),
+          status,
+          deadline: formatDate(deadline),
+          appliedAt: formatDate(appliedAt),
+          adId: getAdIdFromUrl(url) ?? editingJob.adId,
+        }
       : {
-        id: crypto.randomUUID(),
-        company: company.trim(),
-        title: title.trim(),
-        url: url.trim(),
-        city: city.trim(),
-        employmentType: employmentType.trim(),
-        occupation: occupation.trim(),
-        status,
-        deadline: formatDate(deadline),
-        appliedAt: formatDate(appliedAt),
-        createdAt: new Date().toISOString(),
-        adId: getAdIdFromUrl(url) ?? undefined
-      };
+          id: crypto.randomUUID(),
+          company: company.trim(),
+          title: title.trim(),
+          url: url.trim(),
+          city: city.trim(),
+          employmentType: employmentType.trim(),
+          occupation: occupation.trim(),
+          status,
+          deadline: formatDate(deadline),
+          appliedAt: formatDate(appliedAt),
+          createdAt: new Date().toISOString(),
+          adId: getAdIdFromUrl(url) ?? undefined,
+        };
 
     if (editingJob) {
       onUpdate(jobData);
@@ -247,7 +247,7 @@ export function useJobForm({
         title: "Jobb uppdaterat",
         description: `${jobData.title} uppdaterades.`,
         type: "success",
-        closable: true
+        closable: true,
       });
 
       onCancelEdit();
@@ -260,7 +260,7 @@ export function useJobForm({
       title: "Jobb sparat",
       description: `${jobData.title} hos ${jobData.company} lades till.`,
       type: "success",
-      closable: true
+      closable: true,
     });
 
     resetForm();
@@ -296,6 +296,6 @@ export function useJobForm({
     fieldsLocked,
     lockedStyles,
     handleFetchInfo,
-    handleSubmit
+    handleSubmit,
   };
 }

@@ -13,7 +13,7 @@ export function JobFormActions({
   isEditing,
   isValid,
   isFetching,
-  onCancelEdit
+  onCancelEdit,
 }: Props) {
   return (
     <HStack justify="end" pt="2" gap="3">
@@ -22,7 +22,8 @@ export function JobFormActions({
           type="button"
           variant="ghost"
           borderRadius="lg"
-          onClick={onCancelEdit}>
+          onClick={onCancelEdit}
+        >
           Avbryt
         </Button>
       )}
@@ -33,7 +34,8 @@ export function JobFormActions({
         size="md"
         borderRadius="lg"
         px="6"
-        disabled={!isValid || isFetching}>
+        disabled={!isValid || isFetching}
+      >
         {isEditing ? "Uppdatera" : "Spara"}
       </Button>
     </HStack>

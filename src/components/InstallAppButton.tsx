@@ -25,7 +25,7 @@ export function InstallAppButton() {
     return () => {
       window.removeEventListener(
         "beforeinstallprompt",
-        handleBeforeInstallPrompt
+        handleBeforeInstallPrompt,
       );
     };
   }, []);

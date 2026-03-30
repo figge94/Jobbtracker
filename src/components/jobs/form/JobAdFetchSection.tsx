@@ -9,7 +9,7 @@ import {
   HStack,
   Input,
   Stack,
-  Text
+  Text,
 } from "@chakra-ui/react";
 
 type Props = {
@@ -29,7 +29,7 @@ export function JobAdFetchSection({
   isFetching,
   canFetch,
   fieldsLocked,
-  handleFetchInfo
+  handleFetchInfo,
 }: Props) {
   return (
     <Stack gap="4">
@@ -42,7 +42,8 @@ export function JobAdFetchSection({
           <Badge
             colorPalette={adSource === "historical" ? "orange" : "green"}
             variant="subtle"
-            borderRadius="full">
+            borderRadius="full"
+          >
             {adSource === "historical" ? "Historiskt arkiv" : "Aktuell annons"}
           </Badge>
         )}
@@ -51,7 +52,8 @@ export function JobAdFetchSection({
       <Grid
         templateColumns={{ base: "1fr", md: "1fr auto" }}
         gap="4"
-        alignItems="end">
+        alignItems="end"
+      >
         <Field.Root>
           <Field.Label fontSize="sm" fontWeight="600">
             Länk till annons
@@ -73,7 +75,8 @@ export function JobAdFetchSection({
           borderRadius="lg"
           onClick={handleFetchInfo}
           loading={isFetching}
-          disabled={!canFetch}>
+          disabled={!canFetch}
+        >
           Hämta info
         </Button>
       </Grid>
@@ -86,7 +89,8 @@ export function JobAdFetchSection({
           bg="orange.50"
           borderWidth="1px"
           borderColor="orange.200"
-          _dark={{ bg: "orange.950", borderColor: "orange.800" }}>
+          _dark={{ bg: "orange.950", borderColor: "orange.800" }}
+        >
           <Text fontSize="sm" fontWeight="600">
             Uppgifter hämtade från annons och är låsta
           </Text>

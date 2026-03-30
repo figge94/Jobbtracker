@@ -30,7 +30,8 @@ export function ExpandableSearch({ value, onChange }: Props) {
       }}
       _hover={{
         borderColor: "border.emphasized",
-      }}>
+      }}
+    >
       <InputGroup startElement={<LuSearch size={16} />}>
         <Input
           value={value}

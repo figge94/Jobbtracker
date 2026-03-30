@@ -15,7 +15,7 @@ export function JobModal({
   onClose,
   onAdd,
   onUpdate,
-  editingJob
+  editingJob,
 }: Props) {
   const isEditing = editingJob !== null;
 
@@ -25,7 +25,8 @@ export function JobModal({
       onOpenChange={(details) => {
         if (!details.open) onClose();
       }}
-      size="lg">
+      size="lg"
+    >
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner p="0">
@@ -33,7 +34,8 @@ export function JobModal({
             maxW="4xl"
             border="none"
             boxShadow="0"
-            borderRadius="2xl">
+            borderRadius="2xl"
+          >
             <Dialog.CloseTrigger asChild>
               <CloseButton
                 position="absolute"

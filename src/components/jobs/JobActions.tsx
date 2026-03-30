@@ -16,7 +16,8 @@ export function JobActions({ onEdit, onDelete }: Props) {
         onClick={onEdit}
         color="fg.muted"
         opacity={0.7}
-        _hover={{ opacity: 1, bg: "bg.subtle" }}>
+        _hover={{ opacity: 1, bg: "bg.subtle" }}
+      >
         <LuPencil />
       </IconButton>
 
@@ -31,7 +32,8 @@ export function JobActions({ onEdit, onDelete }: Props) {
           opacity: 1,
           bg: "red.100",
           _dark: { bg: "red.900" },
-        }}>
+        }}
+      >
         <LuTrash2 />
       </IconButton>
     </HStack>

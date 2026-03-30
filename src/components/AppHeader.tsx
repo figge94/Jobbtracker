@@ -24,7 +24,8 @@ export function AppHeader({ search, onSearchChange }: Props) {
         <Stack
           direction="row"
           gap="3"
-          justify={{ base: "flex-end", sm: "start" }}>
+          justify={{ base: "flex-end", sm: "start" }}
+        >
           <InstallAppButton />
         </Stack>
       </Stack>

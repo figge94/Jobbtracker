@@ -3,7 +3,7 @@ import type { JobStatus } from "../../types/job";
 import {
   JOB_STATUSES,
   getStatusColor,
-  getStatusLabel
+  getStatusLabel,
 } from "../../utils/job-status";
 
 type Props = {
@@ -27,15 +27,17 @@ export function JobStats({ stats }: Props) {
             _dark={{
               bg: `${color}.900`,
               borderColor: `${color}.600`,
-              boxShadow: "md"
-            }}>
+              boxShadow: "md",
+            }}
+          >
             <Card.Body>
               <Stat.Root>
                 <Stat.Label
                   fontSize="sm"
                   fontWeight="medium"
                   color={`${color}.600`}
-                  _dark={{ color: `${color}.300` }}>
+                  _dark={{ color: `${color}.300` }}
+                >
                   {getStatusLabel(status)}
                 </Stat.Label>
 
@@ -43,7 +45,8 @@ export function JobStats({ stats }: Props) {
                   fontSize="3xl"
                   fontWeight="bold"
                   color="gray.800"
-                  _dark={{ color: "white" }}>
+                  _dark={{ color: "white" }}
+                >
                   {stats[status]}
                 </Stat.ValueText>
               </Stat.Root>

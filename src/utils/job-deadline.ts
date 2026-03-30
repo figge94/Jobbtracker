@@ -1,6 +1,6 @@
 export function getDaysLeft(deadline: string) {
   return Math.ceil(
-    (new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+    (new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
   );
 }
 

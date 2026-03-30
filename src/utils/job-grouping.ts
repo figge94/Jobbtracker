@@ -3,7 +3,7 @@ import type { Job } from "../types/job";
 export function getMonthLabel(dateString: string) {
   return new Date(dateString).toLocaleDateString("sv-SE", {
     month: "long",
-    year: "numeric"
+    year: "numeric",
   });
 }
 
@@ -18,6 +18,6 @@ export function groupJobsByMonth(jobs: Job[]) {
 
       groups[month].push(job);
       return groups;
-    }, {})
+    }, {}),
   );
 }

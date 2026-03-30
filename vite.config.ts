@@ -20,14 +20,14 @@ export default defineConfig({
           {
             src: "/icons/pwa-192x192.png",
             sizes: "192x192",
-            type: "image/png"
+            type: "image/png",
           },
           {
             src: "/icons/pwa-512x512.png",
             sizes: "512x512",
             type: "image/png",
-            purpose: "any maskable"
-          }
+            purpose: "any maskable",
+          },
         ],
         screenshots: [
           {
@@ -35,26 +35,26 @@ export default defineConfig({
             sizes: "1280x720",
             type: "image/png",
             form_factor: "wide",
-            label: "Jobbtracker på dator"
+            label: "Jobbtracker på dator",
           },
           {
             src: "/screenshots/mobile.png",
             sizes: "390x844",
             type: "image/png",
-            label: "Jobbtracker på mobil"
-          }
-        ]
-      }
-    })
+            label: "Jobbtracker på mobil",
+          },
+        ],
+      },
+    }),
   ],
   build: {
     rollupOptions: {
       output: {
         manualChunks: {
           chakra: ["@chakra-ui/react", "framer-motion"],
-          icons: ["lucide-react", "react-icons"]
-        }
-      }
-    }
-  }
+          icons: ["lucide-react", "react-icons"],
+        },
+      },
+    },
+  },
 });

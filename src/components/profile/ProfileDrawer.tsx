@@ -55,7 +55,8 @@ export function ProfileDrawer({ open, onClose, stats, totalJobs }: Props) {
                     _dark={{
                       bg: `${getStatusColor(status)}.900`,
                       borderColor: `${getStatusColor(status)}.700`,
-                    }}>
+                    }}
+                  >
                     <Card.Body p="3">
                       <Text fontSize="xs" color="fg.muted">
                         {getStatusLabel(status)}

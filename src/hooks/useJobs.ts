@@ -35,7 +35,7 @@ export function useJobs() {
 
   function changeStatus(id: string, status: JobStatus) {
     setJobs((prev) =>
-      prev.map((job) => (job.id === id ? { ...job, status } : job))
+      prev.map((job) => (job.id === id ? { ...job, status } : job)),
     );
   }
 
@@ -44,10 +44,10 @@ export function useJobs() {
       .filter(
         (job) =>
           job.title.toLowerCase().includes(search.toLowerCase()) ||
-          job.company.toLowerCase().includes(search.toLowerCase())
+          job.company.toLowerCase().includes(search.toLowerCase()),
       )
       .filter((job) =>
-        statusFilter === "alla" ? true : job.status === statusFilter
+        statusFilter === "alla" ? true : job.status === statusFilter,
       );
   }, [jobs, search, statusFilter]);
 
@@ -55,8 +55,8 @@ export function useJobs() {
     return Object.fromEntries(
       JOB_STATUSES.map((status) => [
         status,
-        jobs.filter((job) => job.status === status).length
-      ])
+        jobs.filter((job) => job.status === status).length,
+      ]),
     ) as Record<JobStatus, number>;
   }, [jobs]);
 
@@ -64,14 +64,14 @@ export function useJobs() {
     return Object.fromEntries(
       JOB_STATUSES.map((status) => [
         status,
-        filteredJobs.filter((job) => job.status === status)
-      ])
+        filteredJobs.filter((job) => job.status === status),
+      ]),
     ) as Record<JobStatus, Job[]>;
   }, [filteredJobs]);
 
   function updateJob(updatedJob: Job) {
     setJobs((prev) =>
-      prev.map((job) => (job.id === updatedJob.id ? updatedJob : job))
+      prev.map((job) => (job.id === updatedJob.id ? updatedJob : job)),
     );
   }
 
@@ -87,6 +87,6 @@ export function useJobs() {
     addJob,
     deleteJob,
     changeStatus,
-    updateJob
+    updateJob,
   };
 }

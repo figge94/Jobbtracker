@@ -30,7 +30,7 @@ export function JobDetailsSection({
   employmentType,
   setEmploymentType,
   fieldsLocked,
-  lockedStyles
+  lockedStyles,
 }: Props) {
   return (
     <Stack gap="5">

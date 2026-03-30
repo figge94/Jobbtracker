@@ -63,7 +63,8 @@ export function JobStatusSection({
               setDeadline(value ? value.toString() : "");
             }}
             disabled={fieldsLocked}
-            positioning={{ placement: "bottom-start" }}>
+            positioning={{ placement: "bottom-start" }}
+          >
             <DatePicker.Control>
               <DatePicker.Input
                 placeholder="Välj datum"
@@ -128,7 +129,8 @@ export function JobStatusSection({
                 const value = e.value?.[0];
                 setAppliedAt(value ? value.toString() : "");
               }}
-              positioning={{ placement: "bottom-start" }}>
+              positioning={{ placement: "bottom-start" }}
+            >
               <DatePicker.Control>
                 <DatePicker.Input
                   placeholder="Välj datum"
@@ -195,7 +197,8 @@ export function JobStatusSection({
               }
             }}
             positioning={{ placement: "bottom-start" }}
-            size="md">
+            size="md"
+          >
             <Select.HiddenSelect />
 
             <Select.Control>

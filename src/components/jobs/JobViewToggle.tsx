@@ -11,19 +11,20 @@ export function JobViewToggle({ viewMode, onChange }: Props) {
     <SegmentGroup.Root
       value={viewMode}
       onValueChange={(e) => onChange(e.value as "list" | "board")}
-      size="md">
+      size="md"
+    >
       <SegmentGroup.Indicator />
 
       <SegmentGroup.Items
         items={[
           {
             value: "list",
-            label: <List size={18} />
+            label: <List size={18} />,
           },
           {
             value: "board",
-            label: <Grid2x2 size={18} />
-          }
+            label: <Grid2x2 size={18} />,
+          },
         ]}
       />
     </SegmentGroup.Root>
