@@ -18,6 +18,8 @@ import { useJobs } from './hooks/useJobs';
 import type { Job, JobStatus } from './types/job';
 import { groupJobsByMonth } from './utils/job-grouping';
 import { JOB_STATUSES } from './utils/job-status';
+import { PwaUpdatePrompt } from './components/PwaUpdatePrompt';
+import { Toaster } from './components/ui/toaster';
 
 const ProfileDrawer = lazy(() => import('./components/profile/ProfileDrawer'));
 const SettingsDrawer = lazy(() => import('./components/settings/SettingsDrawer'));
@@ -260,6 +262,8 @@ export default function App() {
           <SettingsDrawer open={settingsDrawer.open} onClose={settingsDrawer.onClose} />
         </Suspense>
       )}
+      <PwaUpdatePrompt />
+      <Toaster />
     </Container>
   );
 }

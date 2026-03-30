@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      injectRegister: 'auto',
       manifest: {
         id: '/',
         name: 'Jobbtracker',
