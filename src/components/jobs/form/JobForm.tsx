@@ -8,6 +8,7 @@ import { JobDetailsSection } from './JobDetailsSection';
 import { JobFormActions } from './JobFormActions';
 import { JobFormHeader } from './JobFormHeader';
 import { JobStatusSection } from './JobStatusSection';
+import { JobGoalSection } from './JobGoalSection';
 
 type Props = {
   isEditing: boolean;
@@ -40,6 +41,10 @@ export default function JobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: P
     setDeadline,
     appliedAt,
     setAppliedAt,
+    isOutsideCommuteDistance,
+    setIsOutsideCommuteDistance,
+    isOtherOccupation,
+    setIsOtherOccupation,
     isFetching,
     adSource,
     isEditing,
@@ -99,6 +104,13 @@ export default function JobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: P
             setStatus={setStatus}
             fieldsLocked={fieldsLocked}
             lockedStyles={lockedStyles}
+          />
+
+          <JobGoalSection
+            isOutsideCommuteDistance={isOutsideCommuteDistance}
+            setIsOutsideCommuteDistance={setIsOutsideCommuteDistance}
+            isOtherOccupation={isOtherOccupation}
+            setIsOtherOccupation={setIsOtherOccupation}
           />
 
           <JobFormActions

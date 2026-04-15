@@ -1,4 +1,4 @@
-import { Heading, Stack, Tabs, Text } from '@chakra-ui/react';
+import { Heading, HStack, Tabs, Text } from '@chakra-ui/react';
 
 type Props = {
   monthKeys: string[];
@@ -8,13 +8,20 @@ type Props = {
 
 export default function HistoryMonthTabs({ monthKeys, selectedMonth, onChange }: Props) {
   return (
-    <Stack gap="5">
-      <Stack gap="1">
-        <Text fontSize="sm" color="fg.muted" fontWeight="medium">
+    <>
+      <HStack justify="space-between" align="end" wrap="wrap" gap="3">
+        <Text
+          fontSize="xs"
+          textTransform="uppercase"
+          letterSpacing="0.08em"
+          color="fg.muted"
+          fontWeight="semibold"
+        >
           Månad för månad
         </Text>
+
         <Heading size="md">Välj period</Heading>
-      </Stack>
+      </HStack>
 
       <Tabs.Root value={selectedMonth} onValueChange={(details) => onChange(details.value)}>
         <Tabs.List bg="transparent" p="0" display="flex" flexWrap="wrap" gap="2">
@@ -26,9 +33,13 @@ export default function HistoryMonthTabs({ monthKeys, selectedMonth, onChange }:
               borderRadius="full"
               px="4"
               py="2"
+              fontWeight="medium"
               bg="bg"
+              borderWidth="1px"
+              borderColor="border.subtle"
               _selected={{
                 bg: 'colorPalette.subtle',
+                borderColor: 'colorPalette.muted',
               }}
             >
               {month}
@@ -36,6 +47,6 @@ export default function HistoryMonthTabs({ monthKeys, selectedMonth, onChange }:
           ))}
         </Tabs.List>
       </Tabs.Root>
-    </Stack>
+    </>
   );
 }

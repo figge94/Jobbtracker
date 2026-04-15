@@ -11,6 +11,8 @@ import {
 import HistoryMonthDetails from './HistoryMonthDetails';
 import HistoryMonthTabs from './HistoryMonthTabs';
 import HistoryOverview from './HistoryOverview';
+import GoalProgressWidget from '../goals/GoalProgressWidget';
+import { JOB_GOALS } from '../../utils/job-rules';
 
 type Props = {
   jobs: Job[];
@@ -63,6 +65,14 @@ export default function HistoryList({ jobs, onBack }: Props) {
     return getCompanyStats(allAppliedJobs);
   }, [allAppliedJobs]);
 
+  const outsideCommuteCount = useMemo(() => {
+    return allAppliedJobs.filter((job) => job.isOutsideCommuteDistance).length;
+  }, [allAppliedJobs]);
+
+  const otherOccupationCount = useMemo(() => {
+    return allAppliedJobs.filter((job) => job.isOtherOccupation).length;
+  }, [allAppliedJobs]);
+
   const startedMonth = useMemo(() => {
     if (jobs.length === 0) return '';
 
@@ -113,6 +123,15 @@ export default function HistoryList({ jobs, onBack }: Props) {
         </Card.Root>
       ) : (
         <Stack gap="6">
+          <GoalProgressWidget
+            totalCount={allAppliedJobs.length}
+            totalGoal={JOB_GOALS.total}
+            outsideCommuteCount={outsideCommuteCount}
+            outsideCommuteGoal={JOB_GOALS.outsideCommute}
+            otherOccupationCount={otherOccupationCount}
+            otherOccupationGoal={JOB_GOALS.otherOccupation}
+          />
+
           <HistoryOverview
             totalJobs={jobs.length}
             startedMonth={startedMonth}
@@ -125,10 +144,13 @@ export default function HistoryList({ jobs, onBack }: Props) {
           />
 
           <Box
-            bg="bg.subtle"
+            bg="bg.panel"
             borderRadius="3xl"
-            px={{ base: '4', md: '6' }}
-            py={{ base: '5', md: '6' }}
+            px={{ base: '5', md: '7' }}
+            py={{ base: '5', md: '7' }}
+            borderWidth="1px"
+            borderColor="border.subtle"
+            boxShadow="sm"
           >
             <Stack gap="5">
               <HistoryMonthTabs

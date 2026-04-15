@@ -10,7 +10,13 @@ type Props = {
 export default function HistoryStatList({ title, items, emptyText }: Props) {
   return (
     <Stack gap="3">
-      <Text fontSize="sm" color="fg.muted" fontWeight="medium">
+      <Text
+        fontSize="xs"
+        textTransform="uppercase"
+        letterSpacing="0.08em"
+        color="fg.muted"
+        fontWeight="semibold"
+      >
         {title}
       </Text>
 
@@ -25,10 +31,15 @@ export default function HistoryStatList({ title, items, emptyText }: Props) {
               px="4"
               py="3"
               bg="bg.subtle"
+              borderWidth="1px"
+              borderColor="border.subtle"
               borderRadius="xl"
             >
-              <Text fontWeight="medium">{item.name}</Text>
-              <Badge variant="subtle" borderRadius="full" px="2.5">
+              <Text fontWeight="medium" truncate>
+                {item.name}
+              </Text>
+
+              <Badge variant="subtle" borderRadius="full" px="2.5" minW="8" justifyContent="center">
                 {item.count}
               </Badge>
             </HStack>

@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
+  Badge,
   Box,
   Button,
   Card,
@@ -9,16 +10,17 @@ import {
   Portal,
   Stack,
   Text,
-} from "@chakra-ui/react";
-import type { Job, JobStatus } from "../../types/job";
-import { getStatusColor } from "../../utils/job-status";
-import { JobStatusSelect } from "./JobStatusSelect";
-import { JobDeadline } from "./JobDeadline";
-import { JobMeta } from "./JobMeta";
-import { JobActions } from "./JobActions";
-import { motion, useMotionValue, animate } from "framer-motion";
-import { toaster } from "../ui/toaster";
-import { LuExternalLink } from "react-icons/lu";
+  HStack,
+} from '@chakra-ui/react';
+import type { Job, JobStatus } from '../../types/job';
+import { getStatusColor } from '../../utils/job-status';
+import { JobStatusSelect } from './JobStatusSelect';
+import { JobDeadline } from './JobDeadline';
+import { JobMeta } from './JobMeta';
+import { JobActions } from './JobActions';
+import { motion, useMotionValue, animate } from 'framer-motion';
+import { toaster } from '../ui/toaster';
+import { LuExternalLink } from 'react-icons/lu';
 
 const MotionBox = motion.create(Box);
 
@@ -30,13 +32,7 @@ type Props = {
   compact?: boolean;
 };
 
-export function JobCard({
-  job,
-  onDelete,
-  onStatusChange,
-  onEdit,
-  compact = false,
-}: Props) {
+export function JobCard({ job, onDelete, onStatusChange, onEdit, compact = false }: Props) {
   const [isDragging, setIsDragging] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const x = useMotionValue(0);
@@ -52,9 +48,9 @@ export function JobCard({
     setDeleteDialogOpen(false);
 
     toaster.create({
-      title: "Jobb borttaget",
+      title: 'Jobb borttaget',
       description: `"${job.title}" togs bort`,
-      type: "success",
+      type: 'success',
     });
   };
 
@@ -83,7 +79,7 @@ export function JobCard({
         position="relative"
         zIndex={1}
         style={{ x }}
-        drag={swipeEnabled ? "x" : false}
+        drag={swipeEnabled ? 'x' : false}
         dragConstraints={{ left: -140, right: 0 }}
         dragElastic={0.08}
         dragMomentum={false}
@@ -109,17 +105,17 @@ export function JobCard({
           overflow="hidden"
           bg="bg.panel"
           transition="0.2s"
-          _hover={{ shadow: "md", translateY: "-1px" }}
+          _hover={{ shadow: 'md', translateY: '-1px' }}
         >
           {!compact && <Box h="1.5" bg={`${getStatusColor(job.status)}.400`} />}
 
-          <Card.Body p={compact ? "4" : "5"}>
+          <Card.Body p={compact ? '4' : '5'}>
             <Stack gap={4}>
               <Flex justify="space-between" align="start" gap="4">
                 <Stack gap="2" flex="1" minW={0}>
                   <Box>
                     <Text
-                      fontSize={compact ? "lg" : "xl"}
+                      fontSize={compact ? 'lg' : 'xl'}
                       fontWeight="semibold"
                       lineHeight="1.25"
                       truncate
@@ -133,7 +129,7 @@ export function JobCard({
                   </Box>
                 </Stack>
 
-                <Stack gap="2" align="end" minW={compact ? "120px" : "180px"}>
+                <Stack gap="2" align="end" minW={compact ? '120px' : '180px'}>
                   {!compact && (
                     <Box w="100%">
                       <JobStatusSelect
@@ -143,10 +139,7 @@ export function JobCard({
                     </Box>
                   )}
 
-                  <JobActions
-                    onEdit={() => onEdit(job)}
-                    onDelete={openDeleteDialog}
-                  />
+                  <JobActions onEdit={() => onEdit(job)} onDelete={openDeleteDialog} />
                 </Stack>
               </Flex>
 
@@ -155,6 +148,22 @@ export function JobCard({
                 city={job.city}
                 employmentType={job.employmentType}
               />
+
+              {(job.isOutsideCommuteDistance || job.isOtherOccupation) && (
+                <HStack gap="2" wrap="wrap">
+                  {job.isOutsideCommuteDistance && (
+                    <Badge variant="subtle" borderRadius="full" px="2.5">
+                      Utanför pendling
+                    </Badge>
+                  )}
+
+                  {job.isOtherOccupation && (
+                    <Badge variant="subtle" borderRadius="full" px="2.5">
+                      Annat yrke
+                    </Badge>
+                  )}
+                </HStack>
+              )}
 
               {job.url && (
                 <Link
@@ -167,9 +176,9 @@ export function JobCard({
                   color="blue.600"
                   fontWeight="semibold"
                   _hover={{
-                    color: "blue.500",
-                    textDecoration: "underline",
-                    textUnderlineOffset: "4px",
+                    color: 'blue.500',
+                    textDecoration: 'underline',
+                    textUnderlineOffset: '4px',
                   }}
                   transition="color 0.2s"
                 >
@@ -182,7 +191,7 @@ export function JobCard({
 
               {!compact && (
                 <Text fontSize="xs" color="fg.muted">
-                  Sparad {new Date(job.createdAt).toLocaleString("sv-SE")}
+                  Sparad {new Date(job.createdAt).toLocaleString('sv-SE')}
                 </Text>
               )}
             </Stack>
@@ -202,16 +211,11 @@ export function JobCard({
                 <Dialog.Title>Ta bort jobb</Dialog.Title>
               </Dialog.Header>
 
-              <Dialog.Body>
-                Är du säker på att du vill ta bort "{job.title}"?
-              </Dialog.Body>
+              <Dialog.Body>Är du säker på att du vill ta bort "{job.title}"?</Dialog.Body>
 
               <Dialog.Footer>
                 <Stack direction="row">
-                  <Button
-                    variant="ghost"
-                    onClick={() => setDeleteDialogOpen(false)}
-                  >
+                  <Button variant="ghost" onClick={() => setDeleteDialogOpen(false)}>
                     Avbryt
                   </Button>
                   <Button colorPalette="red" onClick={handleDelete}>

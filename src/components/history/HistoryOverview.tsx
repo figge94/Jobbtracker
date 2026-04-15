@@ -1,4 +1,4 @@
-import { Badge, Box, Heading, Stack, Text } from '@chakra-ui/react';
+import { Badge, Box, Grid, Heading, Stack, Text } from '@chakra-ui/react';
 import type { StatItem } from '../../utils/history-stats';
 import HistoryStatList from './HistoryStatList';
 
@@ -13,6 +13,48 @@ type Props = {
   topCompanies: StatItem[];
 };
 
+type SummaryCardProps = {
+  label: string;
+  value: string | number;
+  badgeText?: string | number;
+};
+
+function SummaryCard({ label, value, badgeText }: SummaryCardProps) {
+  return (
+    <Box
+      bg="bg"
+      borderRadius="2xl"
+      px="5"
+      py="5"
+      borderWidth="1px"
+      borderColor="border.subtle"
+      boxShadow="xs"
+    >
+      <Stack gap="3">
+        <Text
+          fontSize="xs"
+          textTransform="uppercase"
+          letterSpacing="0.08em"
+          color="fg.muted"
+          fontWeight="semibold"
+        >
+          {label}
+        </Text>
+
+        <Heading size="md" lineHeight="1.2">
+          {value}
+        </Heading>
+
+        {badgeText !== undefined && (
+          <Badge alignSelf="flex-start" variant="subtle" borderRadius="full" px="2.5" py="0.5">
+            {badgeText}
+          </Badge>
+        )}
+      </Stack>
+    </Box>
+  );
+}
+
 export default function HistoryOverview({
   totalJobs,
   startedMonth,
@@ -25,83 +67,81 @@ export default function HistoryOverview({
 }: Props) {
   return (
     <Box
-      bg="linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0) 100%)"
+      bg="bg.panel"
       borderRadius="3xl"
-      px={{ base: '4', md: '6' }}
-      py={{ base: '5', md: '6' }}
+      px={{ base: '5', md: '7' }}
+      py={{ base: '5', md: '7' }}
       borderWidth="1px"
-      borderColor="whiteAlpha.100"
+      borderColor="border.subtle"
+      boxShadow="sm"
     >
-      <Stack gap="6">
-        <Stack gap="1">
-          <Text fontSize="sm" color="fg.muted" fontWeight="medium">
+      <Stack gap="7">
+        <Stack gap="2">
+          <Text
+            fontSize="xs"
+            textTransform="uppercase"
+            letterSpacing="0.08em"
+            color="fg.muted"
+            fontWeight="semibold"
+          >
             Översikt
           </Text>
-          <Heading size="md">Din jobbhistorik</Heading>
-          <Text color="fg.muted" maxW="2xl">
+
+          <Heading size="lg">Din jobbhistorik</Heading>
+
+          <Text color="fg.muted" fontSize="sm" maxW="2xl">
             Sparat {totalJobs} jobb{startedMonth ? ` sedan ${startedMonth}` : ''}.
           </Text>
         </Stack>
 
-        <Stack direction={{ base: 'column', md: 'row' }} gap="3" align="stretch">
-          <Box flex="1" bg="bg.subtle" borderRadius="2xl" px="4" py="4">
-            <Text fontSize="sm" color="fg.muted">
-              Totalt sökta jobb
-            </Text>
-            <Heading size="lg" mt="1">
-              {appliedJobsCount}
-            </Heading>
+        <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', xl: 'repeat(4, 1fr)' }} gap="4">
+          <SummaryCard label="Totalt sökta jobb" value={appliedJobsCount} />
+          <SummaryCard label="Sparade men ej sökta" value={savedOnlyCount} />
+          <SummaryCard
+            label="Vanligaste rollen"
+            value={topOccupation ? topOccupation.name : 'Ingen ännu'}
+            badgeText={topOccupation ? topOccupation.count : undefined}
+          />
+          <SummaryCard
+            label="Mest aktiv månad"
+            value={mostActiveMonth ? mostActiveMonth[0] : 'Ingen ännu'}
+            badgeText={mostActiveMonth ? mostActiveMonth[1].length : undefined}
+          />
+        </Grid>
+
+        <Grid templateColumns={{ base: '1fr', xl: '1fr 1fr' }} gap="5">
+          <Box
+            bg="bg"
+            borderRadius="2xl"
+            px={{ base: '4', md: '5' }}
+            py={{ base: '4', md: '5' }}
+            borderWidth="1px"
+            borderColor="border.subtle"
+            boxShadow="xs"
+          >
+            <HistoryStatList
+              title="Totalt per roll"
+              items={allOccupationStats}
+              emptyText="Ingen total statistik ännu."
+            />
           </Box>
 
-          <Box flex="1" bg="bg.subtle" borderRadius="2xl" px="4" py="4">
-            <Text fontSize="sm" color="fg.muted">
-              Sparade men ej sökta
-            </Text>
-            <Heading size="lg" mt="1">
-              {savedOnlyCount}
-            </Heading>
+          <Box
+            bg="bg"
+            borderRadius="2xl"
+            px={{ base: '4', md: '5' }}
+            py={{ base: '4', md: '5' }}
+            borderWidth="1px"
+            borderColor="border.subtle"
+            boxShadow="xs"
+          >
+            <HistoryStatList
+              title="Toppföretag"
+              items={topCompanies.slice(0, 5)}
+              emptyText="Ingen företagsstatistik ännu."
+            />
           </Box>
-
-          <Box flex="1" bg="bg.subtle" borderRadius="2xl" px="4" py="4">
-            <Text fontSize="sm" color="fg.muted">
-              Vanligaste rollen
-            </Text>
-            <Heading size="sm" mt="2" lineHeight="1.3">
-              {topOccupation ? topOccupation.name : 'Ingen ännu'}
-            </Heading>
-            {topOccupation && (
-              <Badge mt="3" variant="subtle" borderRadius="full" px="2.5">
-                {topOccupation.count}
-              </Badge>
-            )}
-          </Box>
-
-          <Box flex="1" bg="bg.subtle" borderRadius="2xl" px="4" py="4">
-            <Text fontSize="sm" color="fg.muted">
-              Mest aktiv månad
-            </Text>
-            <Heading size="sm" mt="2" lineHeight="1.3" textTransform="capitalize">
-              {mostActiveMonth ? mostActiveMonth[0] : 'Ingen ännu'}
-            </Heading>
-            {mostActiveMonth && (
-              <Badge mt="3" variant="subtle" borderRadius="full" px="2.5">
-                {mostActiveMonth[1].length}
-              </Badge>
-            )}
-          </Box>
-        </Stack>
-
-        <HistoryStatList
-          title="Totalt per roll"
-          items={allOccupationStats}
-          emptyText="Ingen total statistik ännu."
-        />
-
-        <HistoryStatList
-          title="Toppföretag"
-          items={topCompanies.slice(0, 5)}
-          emptyText="Ingen företagsstatistik ännu."
-        />
+        </Grid>
       </Stack>
     </Box>
   );

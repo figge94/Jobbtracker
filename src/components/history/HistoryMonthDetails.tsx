@@ -1,4 +1,4 @@
-import { Badge, Box, Heading, Stack, Text } from '@chakra-ui/react';
+import { Badge, Box, Grid, Heading, Stack, Text } from '@chakra-ui/react';
 import type { Job } from '../../types/job';
 import type { StatItem } from '../../utils/history-stats';
 import HistoryStatList from './HistoryStatList';
@@ -12,6 +12,47 @@ type Props = {
   topMonthOccupation: StatItem | null;
 };
 
+type SummaryCardProps = {
+  label: string;
+  value: string | number;
+  badgeText?: string | number;
+};
+
+function SummaryCard({ label, value, badgeText }: SummaryCardProps) {
+  return (
+    <Box
+      bg="bg.subtle"
+      borderRadius="2xl"
+      px="5"
+      py="4"
+      borderWidth="1px"
+      borderColor="border.subtle"
+    >
+      <Stack gap="3">
+        <Text
+          fontSize="xs"
+          textTransform="uppercase"
+          letterSpacing="0.08em"
+          color="fg.muted"
+          fontWeight="semibold"
+        >
+          {label}
+        </Text>
+
+        <Heading size="md" lineHeight="1.2">
+          {value}
+        </Heading>
+
+        {badgeText !== undefined && (
+          <Badge alignSelf="flex-start" variant="subtle" borderRadius="full" px="2.5" py="0.5">
+            {badgeText}
+          </Badge>
+        )}
+      </Stack>
+    </Box>
+  );
+}
+
 export default function HistoryMonthDetails({
   selectedMonth,
   selectedMonthJobs,
@@ -21,82 +62,116 @@ export default function HistoryMonthDetails({
   topMonthOccupation,
 }: Props) {
   return (
-    <Box bg="bg" borderRadius="2xl" px={{ base: '4', md: '5' }} py={{ base: '4', md: '5' }}>
-      <Stack gap="5">
+    <Box
+      bg="bg"
+      borderRadius="2xl"
+      px={{ base: '4', md: '5' }}
+      py={{ base: '4', md: '5' }}
+      borderWidth="1px"
+      borderColor="border.subtle"
+      boxShadow="xs"
+    >
+      <Stack gap="6">
         <Stack gap="1">
-          <Heading size="sm" textTransform="capitalize">
-            {selectedMonth || 'Ingen månad vald'}
-          </Heading>
-          <Text color="fg.muted">{selectedMonthJobs.length} jobb totalt denna månad.</Text>
-        </Stack>
-
-        <Stack direction={{ base: 'column', md: 'row' }} gap="3" align="stretch">
-          <Box flex="1" bg="bg.subtle" borderRadius="xl" px="4" py="3">
-            <Text fontSize="sm" color="fg.muted">
-              Sökta jobb
-            </Text>
-            <Heading size="md" mt="1">
-              {selectedMonthAppliedJobs.length}
-            </Heading>
-          </Box>
-
-          <Box flex="1" bg="bg.subtle" borderRadius="xl" px="4" py="3">
-            <Text fontSize="sm" color="fg.muted">
-              Ville söka men sökte inte
-            </Text>
-            <Heading size="md" mt="1">
-              {selectedMonthSavedOnlyJobs.length}
-            </Heading>
-          </Box>
-
-          <Box flex="1" bg="bg.subtle" borderRadius="xl" px="4" py="3">
-            <Text fontSize="sm" color="fg.muted">
-              Vanligaste roll
-            </Text>
-            <Heading size="sm" mt="2" lineHeight="1.3">
-              {topMonthOccupation ? topMonthOccupation.name : 'Ingen ännu'}
-            </Heading>
-            {topMonthOccupation && (
-              <Badge mt="3" variant="subtle" borderRadius="full" px="2.5">
-                {topMonthOccupation.count}
-              </Badge>
-            )}
-          </Box>
-        </Stack>
-
-        <HistoryStatList
-          title="Sökta roller"
-          items={selectedMonthOccupationStats}
-          emptyText="Ingen statistik för månaden."
-        />
-
-        <Stack gap="3">
-          <Text fontSize="sm" color="fg.muted" fontWeight="medium">
-            Ville söka men sökte inte
+          <Text
+            fontSize="xs"
+            textTransform="uppercase"
+            letterSpacing="0.08em"
+            color="fg.muted"
+            fontWeight="semibold"
+          >
+            Vald period
           </Text>
 
-          {selectedMonthSavedOnlyJobs.length === 0 ? (
-            <Text color="fg.muted">Inga sådana jobb denna månad.</Text>
-          ) : (
-            <Stack gap="2">
-              {selectedMonthSavedOnlyJobs.map((job) => (
-                <Box key={job.id} px="4" py="3" bg="bg.subtle" borderRadius="xl">
-                  <Stack gap="1.5">
-                    <Text fontWeight="medium">{job.title}</Text>
-                    <Text fontSize="sm" color="fg.muted">
-                      {job.company}
-                    </Text>
-                    {job.occupation && (
-                      <Badge alignSelf="flex-start" variant="subtle" borderRadius="full" px="2.5">
-                        {job.occupation}
-                      </Badge>
-                    )}
-                  </Stack>
-                </Box>
-              ))}
-            </Stack>
-          )}
+          <Heading size="md" textTransform="capitalize">
+            {selectedMonth || 'Ingen månad vald'}
+          </Heading>
+
+          <Text color="fg.muted" fontSize="sm">
+            {selectedMonthJobs.length} jobb totalt denna månad.
+          </Text>
         </Stack>
+
+        <Grid templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }} gap="4">
+          <SummaryCard label="Sökta jobb" value={selectedMonthAppliedJobs.length} />
+          <SummaryCard
+            label="Ville söka men sökte inte"
+            value={selectedMonthSavedOnlyJobs.length}
+          />
+          <SummaryCard
+            label="Vanligaste roll"
+            value={topMonthOccupation ? topMonthOccupation.name : 'Ingen ännu'}
+            badgeText={topMonthOccupation ? topMonthOccupation.count : undefined}
+          />
+        </Grid>
+
+        <Box
+          bg="bg.subtle"
+          borderRadius="2xl"
+          px={{ base: '4', md: '5' }}
+          py={{ base: '4', md: '5' }}
+          borderWidth="1px"
+          borderColor="border.subtle"
+        >
+          <HistoryStatList
+            title="Sökta roller"
+            items={selectedMonthOccupationStats}
+            emptyText="Ingen statistik för månaden."
+          />
+        </Box>
+
+        <Box
+          bg="bg.subtle"
+          borderRadius="2xl"
+          px={{ base: '4', md: '5' }}
+          py={{ base: '4', md: '5' }}
+          borderWidth="1px"
+          borderColor="border.subtle"
+        >
+          <Stack gap="3">
+            <Text
+              fontSize="xs"
+              textTransform="uppercase"
+              letterSpacing="0.08em"
+              color="fg.muted"
+              fontWeight="semibold"
+            >
+              Ville söka men sökte inte
+            </Text>
+
+            {selectedMonthSavedOnlyJobs.length === 0 ? (
+              <Text color="fg.muted">Inga sådana jobb denna månad.</Text>
+            ) : (
+              <Stack gap="2">
+                {selectedMonthSavedOnlyJobs.map((job) => (
+                  <Box
+                    key={job.id}
+                    px="4"
+                    py="3"
+                    bg="bg"
+                    borderRadius="xl"
+                    borderWidth="1px"
+                    borderColor="border.subtle"
+                  >
+                    <Stack gap="1.5">
+                      <Text fontWeight="semibold">{job.title}</Text>
+
+                      <Text fontSize="sm" color="fg.muted">
+                        {job.company}
+                      </Text>
+
+                      {job.occupation && (
+                        <Badge alignSelf="flex-start" variant="subtle" borderRadius="full" px="2.5">
+                          {job.occupation}
+                        </Badge>
+                      )}
+                    </Stack>
+                  </Box>
+                ))}
+              </Stack>
+            )}
+          </Stack>
+        </Box>
       </Stack>
     </Box>
   );

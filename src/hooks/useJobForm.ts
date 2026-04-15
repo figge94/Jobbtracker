@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import type { Job, JobStatus } from '../types/job';
 import { toaster } from '../components/ui/toaster';
+import {
+  isOtherOccupation as checkIsOtherOccupation,
+  isOutsideCommute as checkIsOutsideCommute,
+} from '../utils/job-rules';
 
 type Props = {
   onAdd: (job: Job) => boolean;
@@ -69,9 +73,12 @@ export function useJobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props)
   const [occupation, setOccupation] = useState('');
   const [status, setStatus] = useState<JobStatus>('vill_soka');
   const [deadline, setDeadline] = useState('');
+  const [appliedAt, setAppliedAt] = useState('');
   const [isFetching, setIsFetching] = useState(false);
   const [adSource, setAdSource] = useState<AdSource | null>(null);
-  const [appliedAt, setAppliedAt] = useState('');
+
+  const [isOutsideCommuteDistance, setIsOutsideCommuteDistance] = useState(false);
+  const [isOtherOccupation, setIsOtherOccupation] = useState(false);
 
   const isEditing = editingJob !== null;
   const isValid = company.trim() !== '' && title.trim() !== '';
@@ -100,6 +107,8 @@ export function useJobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props)
     setAppliedAt('');
     setAdSource(null);
     setIsFetching(false);
+    setIsOutsideCommuteDistance(false);
+    setIsOtherOccupation(false);
   }
 
   useEffect(() => {
@@ -114,6 +123,8 @@ export function useJobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props)
       setStatus(editingJob.status);
       setDeadline(formatDate(editingJob.deadline));
       setAppliedAt(formatDate(editingJob.appliedAt));
+      setIsOutsideCommuteDistance(editingJob.isOutsideCommuteDistance ?? false);
+      setIsOtherOccupation(editingJob.isOtherOccupation ?? false);
       setAdSource(null);
       return;
     }
@@ -121,6 +132,28 @@ export function useJobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props)
     resetForm();
     setMode('link');
   }, [editingJob]);
+
+  useEffect(() => {
+    if (isEditing) return;
+
+    if (!city.trim()) {
+      setIsOutsideCommuteDistance(false);
+      return;
+    }
+
+    setIsOutsideCommuteDistance(checkIsOutsideCommute(city));
+  }, [city, isEditing]);
+
+  useEffect(() => {
+    if (isEditing) return;
+
+    if (!occupation.trim()) {
+      setIsOtherOccupation(false);
+      return;
+    }
+
+    setIsOtherOccupation(checkIsOtherOccupation(occupation));
+  }, [occupation, isEditing]);
 
   async function handleFetchInfo() {
     if (!url.trim() || isFetching || isEditing) return;
@@ -212,6 +245,8 @@ export function useJobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props)
           deadline: formatDate(deadline),
           appliedAt: formatDate(appliedAt),
           adId: getAdIdFromUrl(url) ?? editingJob.adId,
+          isOutsideCommuteDistance,
+          isOtherOccupation,
         }
       : {
           id: crypto.randomUUID(),
@@ -226,6 +261,8 @@ export function useJobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props)
           appliedAt: formatDate(appliedAt),
           createdAt: new Date().toISOString(),
           adId: getAdIdFromUrl(url) ?? undefined,
+          isOutsideCommuteDistance,
+          isOtherOccupation,
         };
 
     if (editingJob) {
@@ -286,6 +323,10 @@ export function useJobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props)
     setDeadline,
     appliedAt,
     setAppliedAt,
+    isOutsideCommuteDistance,
+    setIsOutsideCommuteDistance,
+    isOtherOccupation,
+    setIsOtherOccupation,
     isFetching,
     adSource,
     isEditing,

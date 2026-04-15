@@ -1,5 +1,5 @@
 // types/job.ts
-export type JobStatus = "vill_soka" | "sokt" | "intervju" | "avslag";
+export type JobStatus = 'vill_soka' | 'sokt' | 'intervju' | 'avslag';
 
 export type Job = {
   id: string;
@@ -14,4 +14,6 @@ export type Job = {
   createdAt: string;
   adId?: string;
   appliedAt?: string;
+  isOutsideCommuteDistance?: boolean;
+  isOtherOccupation?: boolean;
 };
