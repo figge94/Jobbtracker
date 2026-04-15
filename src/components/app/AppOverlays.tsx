@@ -4,7 +4,7 @@ import type { Job } from '../../types/job';
 const ProfileDrawer = lazy(() => import('../profile/ProfileDrawer'));
 const SettingsDrawer = lazy(() => import('../settings/SettingsDrawer'));
 const JobModal = lazy(() => import('../jobs/JobModal'));
-const HistoryList = lazy(() => import('../stats/HistoryList'));
+const HistoryList = lazy(() => import('../history/HistoryList'));
 
 type DisclosureLike = {
   open: boolean;
