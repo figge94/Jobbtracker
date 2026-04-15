@@ -1,30 +1,10 @@
-import { Suspense, lazy } from 'react';
-import type { Job } from '../../types/job';
+import { Suspense, lazy, useMemo } from 'react';
+import type { AppOverlaysProps } from '../../types/ui';
 
 const ProfileDrawer = lazy(() => import('../profile/ProfileDrawer'));
 const SettingsDrawer = lazy(() => import('../settings/SettingsDrawer'));
 const JobModal = lazy(() => import('../jobs/JobModal'));
 const HistoryList = lazy(() => import('../history/HistoryList'));
-
-type DisclosureLike = {
-  open: boolean;
-  onClose: () => void;
-};
-
-type Props = {
-  page: 'home' | 'history';
-  jobs: Job[];
-  stats: any;
-  cityStats: any;
-  editingJob: Job | null;
-  setPage: (page: 'home' | 'history') => void;
-  jobModal: DisclosureLike;
-  profileDrawer: DisclosureLike;
-  settingsDrawer: DisclosureLike;
-  onAdd: (job: Job) => boolean;
-  onUpdate: (job: Job) => void;
-  onCloseModal: () => void;
-};
 
 export function AppOverlays({
   page,
@@ -39,7 +19,19 @@ export function AppOverlays({
   onAdd,
   onUpdate,
   onCloseModal,
-}: Props) {
+}: AppOverlaysProps) {
+  const appliedJobs = useMemo(() => {
+    return jobs.filter((job) => job.status !== 'vill_soka');
+  }, [jobs]);
+
+  const outsideCommuteCount = useMemo(() => {
+    return appliedJobs.filter((job) => job.isOutsideCommuteDistance).length;
+  }, [appliedJobs]);
+
+  const otherOccupationCount = useMemo(() => {
+    return appliedJobs.filter((job) => job.isOtherOccupation).length;
+  }, [appliedJobs]);
+
   return (
     <>
       {page === 'history' && (
@@ -72,6 +64,8 @@ export function AppOverlays({
             stats={stats}
             cityStats={cityStats}
             totalJobs={jobs.length}
+            outsideCommuteCount={outsideCommuteCount}
+            otherOccupationCount={otherOccupationCount}
           />
         </Suspense>
       )}

@@ -1,20 +1,11 @@
-import { Suspense, lazy, useMemo } from 'react';
-import { Box, Button, Heading, Stack } from '@chakra-ui/react';
+import { Suspense, lazy } from 'react';
+import { Stack } from '@chakra-ui/react';
 import { AppHeader } from '../AppHeader';
-import { JobBoard } from '../jobs/JobBoard';
 import { JobFilters } from '../jobs/JobFilters';
-import { JobList } from '../jobs/JobList';
 import type { Job, JobStatus } from '../../types/job';
-import { groupJobsByMonth } from '../../utils/job-grouping';
-import { JOB_STATUSES } from '../../utils/job-status';
+import { HomePageJobSection } from './HomePageJobSection';
 
 const JobStats = lazy(() => import('../stats/JobStats'));
-
-function groupJobsByStatus<T extends { status: JobStatus }>(jobs: T[]) {
-  return Object.fromEntries(
-    JOB_STATUSES.map((status) => [status, jobs.filter((job) => job.status === status)])
-  ) as Record<JobStatus, T[]>;
-}
 
 type Props = {
   search: string;
@@ -49,8 +40,6 @@ export function HomePageContent({
   onStatusChange,
   onEdit,
 }: Props) {
-  const jobsByMonth = useMemo(() => groupJobsByMonth(filteredJobs), [filteredJobs]);
-
   return (
     <Stack gap="8">
       <AppHeader search={search} onSearchChange={onSearchChange} />
@@ -66,40 +55,15 @@ export function HomePageContent({
         onViewModeChange={onViewModeChange}
       />
 
-      <Button alignSelf="flex-start" variant="outline" size="sm" onClick={onToggleShowJobs}>
-        {showJobs ? 'Dölj jobb' : 'Visa jobb'}
-      </Button>
-
-      {showJobs &&
-        (filteredJobs.length === 0 ? (
-          <Box borderWidth="1px" rounded="xl" p="8" textAlign="center" color="gray.500">
-            Inga jobb matchar filtret.
-          </Box>
-        ) : viewMode === 'list' ? (
-          <JobList
-            jobs={filteredJobs}
-            onDelete={onDelete}
-            onStatusChange={onStatusChange}
-            onEdit={onEdit}
-          />
-        ) : (
-          <Stack gap="8">
-            {jobsByMonth.map(([month, monthJobs]) => (
-              <Stack key={month} gap="4">
-                <Heading size="md" textTransform="capitalize">
-                  {month} ({monthJobs.length})
-                </Heading>
-
-                <JobBoard
-                  jobsByStatus={groupJobsByStatus(monthJobs)}
-                  onStatusChange={onStatusChange}
-                  onDelete={onDelete}
-                  onEdit={onEdit}
-                />
-              </Stack>
-            ))}
-          </Stack>
-        ))}
+      <HomePageJobSection
+        showJobs={showJobs}
+        onToggleShowJobs={onToggleShowJobs}
+        filteredJobs={filteredJobs}
+        viewMode={viewMode}
+        onDelete={onDelete}
+        onStatusChange={onStatusChange}
+        onEdit={onEdit}
+      />
     </Stack>
   );
 }

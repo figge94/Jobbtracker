@@ -1,4 +1,4 @@
-import { Box, Heading, Progress, Stack, Text } from '@chakra-ui/react';
+import { Badge, Box, Heading, Stack, Text } from '@chakra-ui/react';
 
 type GoalRowProps = {
   label: string;
@@ -7,6 +7,7 @@ type GoalRowProps = {
 };
 
 type Props = {
+  title?: string;
   totalCount: number;
   totalGoal: number;
   outsideCommuteCount: number;
@@ -18,26 +19,51 @@ type Props = {
 function GoalRow({ label, value, goal }: GoalRowProps) {
   const safeGoal = goal > 0 ? goal : 1;
   const progress = Math.min((value / safeGoal) * 100, 100);
+  const isDone = value >= goal && goal > 0;
 
   return (
-    <Stack gap="2">
-      <Box display="flex" justifyContent="space-between" gap="3">
-        <Text fontWeight="medium">{label}</Text>
-        <Text color="fg.muted">
-          {value} / {goal}
+    <Stack gap="2.5">
+      <Box display="flex" justifyContent="space-between" alignItems="center" gap="3">
+        <Text fontSize="sm" fontWeight="medium" lineHeight="1.3">
+          {label}
         </Text>
+
+        <Badge
+          variant={isDone ? 'solid' : 'subtle'}
+          colorPalette={isDone ? 'green' : 'gray'}
+          borderRadius="full"
+          px="2.5"
+          minW="56px"
+          textAlign="center"
+          justifyContent="center"
+          flexShrink={0}
+        >
+          {value} / {goal}
+        </Badge>
       </Box>
 
-      <Progress.Root value={progress} borderRadius="full" size="sm">
-        <Progress.Track borderRadius="full">
-          <Progress.Range borderRadius="full" />
-        </Progress.Track>
-      </Progress.Root>
+      <Box
+        w="100%"
+        h="8px"
+        bg="blackAlpha.100"
+        _dark={{ bg: 'whiteAlpha.200' }}
+        borderRadius="full"
+        overflow="hidden"
+      >
+        <Box
+          h="100%"
+          w={`${progress}%`}
+          bg={isDone ? 'green.400' : 'blue.400'}
+          borderRadius="full"
+          transition="width 0.25s ease"
+        />
+      </Box>
     </Stack>
   );
 }
 
 export default function GoalProgressWidget({
+  title,
   totalCount,
   totalGoal,
   outsideCommuteCount,
@@ -49,8 +75,8 @@ export default function GoalProgressWidget({
     <Box
       bg="bg.panel"
       borderRadius="3xl"
-      px={{ base: '5', md: '6' }}
-      py={{ base: '5', md: '6' }}
+      px={{ base: '4', md: '5' }}
+      py={{ base: '4', md: '5' }}
       borderWidth="1px"
       borderColor="border.subtle"
       boxShadow="sm"
@@ -67,7 +93,7 @@ export default function GoalProgressWidget({
             Mål
           </Text>
 
-          <Heading size="md">Din plan</Heading>
+          <Heading size="sm">{title ?? 'Din plan'}</Heading>
 
           <Text color="fg.muted" fontSize="sm">
             Följ upp hur långt du kommit i dina jobbsökningsmål.

@@ -66,12 +66,12 @@ export default function HistoryList({ jobs, onBack }: Props) {
   }, [allAppliedJobs]);
 
   const outsideCommuteCount = useMemo(() => {
-    return allAppliedJobs.filter((job) => job.isOutsideCommuteDistance).length;
-  }, [allAppliedJobs]);
+    return selectedMonthAppliedJobs.filter((job) => job.isOutsideCommuteDistance).length;
+  }, [selectedMonthAppliedJobs]);
 
   const otherOccupationCount = useMemo(() => {
-    return allAppliedJobs.filter((job) => job.isOtherOccupation).length;
-  }, [allAppliedJobs]);
+    return selectedMonthAppliedJobs.filter((job) => job.isOtherOccupation).length;
+  }, [selectedMonthAppliedJobs]);
 
   const startedMonth = useMemo(() => {
     if (jobs.length === 0) return '';
@@ -124,7 +124,7 @@ export default function HistoryList({ jobs, onBack }: Props) {
       ) : (
         <Stack gap="6">
           <GoalProgressWidget
-            totalCount={allAppliedJobs.length}
+            totalCount={selectedMonthAppliedJobs.length}
             totalGoal={JOB_GOALS.total}
             outsideCommuteCount={outsideCommuteCount}
             outsideCommuteGoal={JOB_GOALS.outsideCommute}
