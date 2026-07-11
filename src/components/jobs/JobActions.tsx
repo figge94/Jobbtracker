@@ -1,5 +1,5 @@
-import { HStack, IconButton } from "@chakra-ui/react";
-import { LuPencil, LuTrash2 } from "react-icons/lu";
+import { HStack, IconButton } from '@chakra-ui/react';
+import { LuPencil, LuTrash2 } from 'react-icons/lu';
 
 type Props = {
   onEdit: () => void;
@@ -10,19 +10,19 @@ export function JobActions({ onEdit, onDelete }: Props) {
   return (
     <HStack justify="flex-end">
       <IconButton
-        size="sm"
+        size="md"
         variant="ghost"
         aria-label="Redigera jobb"
         onClick={onEdit}
         color="fg.muted"
         opacity={0.7}
-        _hover={{ opacity: 1, bg: "bg.subtle" }}
+        _hover={{ opacity: 1, bg: 'bg.subtle' }}
       >
         <LuPencil />
       </IconButton>
 
       <IconButton
-        size="sm"
+        size="md"
         variant="ghost"
         colorPalette="red"
         aria-label="Ta bort jobb"
@@ -30,8 +30,8 @@ export function JobActions({ onEdit, onDelete }: Props) {
         opacity={0.75}
         _hover={{
           opacity: 1,
-          bg: "red.100",
-          _dark: { bg: "red.900" },
+          bg: 'red.100',
+          _dark: { bg: 'red.900' },
         }}
       >
         <LuTrash2 />

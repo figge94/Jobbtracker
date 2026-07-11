@@ -41,6 +41,8 @@ export default function JobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: P
     setDeadline,
     appliedAt,
     setAppliedAt,
+    interviewAt,
+    setInterviewAt,
     isOutsideCommuteDistance,
     setIsOutsideCommuteDistance,
     isOtherOccupation,
@@ -64,7 +66,7 @@ export default function JobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: P
   return (
     <Box px={{ base: '4', md: '6' }} py="5">
       <form onSubmit={handleSubmit}>
-        <Stack gap="8">
+        <Stack gap="6">
           <JobFormHeader isEditing={isEditing} mode={mode} setMode={setMode} status={status} />
 
           {mode === 'link' && !isEditing && (
@@ -100,6 +102,8 @@ export default function JobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: P
             setDeadline={setDeadline}
             appliedAt={appliedAt}
             setAppliedAt={setAppliedAt}
+            interviewAt={interviewAt}
+            setInterviewAt={setInterviewAt}
             status={status}
             setStatus={setStatus}
             fieldsLocked={fieldsLocked}

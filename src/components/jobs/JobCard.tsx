@@ -191,7 +191,19 @@ export function JobCard({ job, onDelete, onStatusChange, onEdit, compact = false
 
               {!compact && (
                 <Text fontSize="xs" color="fg.muted">
-                  Sparad {new Date(job.createdAt).toLocaleString('sv-SE')}
+                  {job.status === 'vill_soka'
+                    ? `Sparades ${new Date(job.createdAt).toLocaleDateString('sv-SE', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                      })}`
+                    : job.appliedAt
+                      ? `Sökt ${new Date(job.appliedAt).toLocaleDateString('sv-SE', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric',
+                        })}`
+                      : ''}
                 </Text>
               )}
             </Stack>

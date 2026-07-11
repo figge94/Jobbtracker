@@ -12,11 +12,12 @@ import { useJobModal } from './hooks/useJobModal';
 export default function App() {
   const {
     jobs,
+    currentMonthJobs,
+    historyJobs,
     search,
     setSearch,
     statusFilter,
     setStatusFilter,
-    filteredJobs,
     stats,
     cityStats,
     addJob,
@@ -55,7 +56,7 @@ export default function App() {
           onViewModeChange={setViewMode}
           showJobs={showJobs}
           onToggleShowJobs={() => setShowJobs((prev) => !prev)}
-          filteredJobs={filteredJobs}
+          filteredJobs={currentMonthJobs}
           onDelete={deleteJob}
           onStatusChange={changeStatus}
           onEdit={handleEditJob}
@@ -71,7 +72,7 @@ export default function App() {
 
       <AppOverlays
         page={page}
-        jobs={jobs}
+        jobs={historyJobs}
         stats={stats}
         cityStats={cityStats}
         editingJob={editingJob}

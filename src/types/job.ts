@@ -1,4 +1,3 @@
-// types/job.ts
 export type JobStatus = 'vill_soka' | 'sokt' | 'intervju' | 'avslag';
 
 export type Job = {
@@ -14,6 +13,7 @@ export type Job = {
   createdAt: string;
   adId?: string;
   appliedAt?: string;
+  interviewAt?: string;
   isOutsideCommuteDistance?: boolean;
   isOtherOccupation?: boolean;
 };

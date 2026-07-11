@@ -85,6 +85,19 @@ export function useJobs() {
       .filter((job) => (statusFilter === 'alla' ? true : job.status === statusFilter));
   }, [jobs, search, statusFilter]);
 
+  const currentMonthJobs = useMemo(() => {
+    const now = new Date();
+
+    return filteredJobs.filter((job) => {
+      const relevantDate = job.appliedAt ?? job.createdAt;
+      const date = new Date(relevantDate);
+
+      return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth();
+    });
+  }, [filteredJobs]);
+
+  const historyJobs = jobs;
+
   const stats = useMemo(() => {
     return Object.fromEntries(
       JOB_STATUSES.map((status) => [status, jobs.filter((job) => job.status === status).length])
@@ -126,6 +139,8 @@ export function useJobs() {
 
   return {
     jobs,
+    currentMonthJobs,
+    historyJobs,
     search,
     setSearch,
     statusFilter,

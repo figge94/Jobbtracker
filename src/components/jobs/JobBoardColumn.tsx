@@ -1,7 +1,7 @@
-import { Badge, Box, Card, HStack, Stack, Text } from "@chakra-ui/react";
-import type { Job, JobStatus } from "../../types/job";
-import { getStatusColor, getStatusLabel } from "../../utils/job-status";
-import { JobCard } from "./JobCard";
+import { Badge, Box, Card, HStack, Stack, Text } from '@chakra-ui/react';
+import type { Job, JobStatus } from '../../types/job';
+import { getStatusColor, getStatusLabel } from '../../utils/job-status';
+import { JobCard } from './JobCard';
 
 type Props = {
   status: JobStatus;
@@ -11,13 +11,7 @@ type Props = {
   onEdit: (job: Job) => void;
 };
 
-export function JobBoardColumn({
-  status,
-  jobs,
-  onStatusChange,
-  onDelete,
-  onEdit,
-}: Props) {
+export function JobBoardColumn({ status, jobs, onStatusChange, onDelete, onEdit }: Props) {
   const color = getStatusColor(status);
 
   return (
@@ -30,8 +24,8 @@ export function JobBoardColumn({
       border="1px solid"
       borderColor="border.muted"
       _dark={{
-        bg: "whiteAlpha.50",
-        borderColor: "whiteAlpha.200",
+        bg: 'whiteAlpha.50',
+        borderColor: 'whiteAlpha.200',
       }}
     >
       <Box h="1.5" bg={`${color}.400`} />
@@ -68,12 +62,12 @@ export function JobBoardColumn({
               borderColor="border.muted"
               bg="transparent"
               _dark={{
-                borderColor: "whiteAlpha.200",
+                borderColor: 'whiteAlpha.200',
               }}
               textAlign="center"
             >
               <Text fontSize="sm" color="fg.muted">
-                Inga jobb här ännu
+                Du har inte lagt till något jobb här än
               </Text>
             </Box>
           ) : (

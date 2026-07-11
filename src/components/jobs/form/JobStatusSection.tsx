@@ -1,25 +1,28 @@
-"use client";
+'use client';
 
 import {
   createListCollection,
   DatePicker,
   Field,
   Grid,
+  Input,
   Portal,
   Select,
   Stack,
   Text,
-} from "@chakra-ui/react";
-import { parseDate } from "@internationalized/date";
-import { LuCalendar } from "react-icons/lu";
-import type { JobStatus } from "../../../types/job";
-import { JOB_STATUSES, getStatusLabel } from "../../../utils/job-status";
+} from '@chakra-ui/react';
+import { parseDate } from '@internationalized/date';
+import { LuCalendar } from 'react-icons/lu';
+import type { JobStatus } from '../../../types/job';
+import { JOB_STATUSES, getStatusLabel } from '../../../utils/job-status';
 
 type Props = {
   deadline: string;
   setDeadline: (value: string) => void;
   appliedAt: string;
   setAppliedAt: (value: string) => void;
+  interviewAt: string;
+  setInterviewAt: (value: string) => void;
   status: JobStatus;
   setStatus: (value: JobStatus) => void;
   fieldsLocked: boolean;
@@ -31,6 +34,8 @@ export function JobStatusSection({
   setDeadline,
   appliedAt,
   setAppliedAt,
+  interviewAt,
+  setInterviewAt,
   status,
   setStatus,
   fieldsLocked,
@@ -43,13 +48,15 @@ export function JobStatusSection({
     })),
   });
 
+  const requiresAppliedAt = status !== 'vill_soka';
+
   return (
     <Stack gap="5">
       <Text fontSize="sm" fontWeight="600" color="fg.muted">
         Status och datum
       </Text>
 
-      <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap="5">
+      <Grid templateColumns={{ base: '1fr', md: '1fr 1fr' }} gap="5">
         <Field.Root>
           <Field.Label fontSize="sm" fontWeight="600">
             Sista ansökningsdag
@@ -60,27 +67,27 @@ export function JobStatusSection({
             value={deadline ? [parseDate(deadline)] : []}
             onValueChange={(e) => {
               const value = e.value?.[0];
-              setDeadline(value ? value.toString() : "");
+              setDeadline(value ? value.toString() : '');
             }}
             disabled={fieldsLocked}
-            positioning={{ placement: "bottom-start" }}
+            positioning={{ placement: 'bottom-start' }}
           >
             <DatePicker.Control>
               <DatePicker.Input
                 placeholder="Välj datum"
                 bg="transparent"
                 borderColor="gray.300"
-                _hover={{ borderColor: "gray.400" }}
+                _hover={{ borderColor: 'gray.400' }}
                 _focusVisible={{
-                  borderColor: "blue.400",
-                  boxShadow: "0 1px 0 0 var(--chakra-colors-blue-400)",
+                  borderColor: 'blue.400',
+                  boxShadow: '0 1px 0 0 var(--chakra-colors-blue-400)',
                 }}
                 _dark={{
-                  borderColor: "whiteAlpha.300",
-                  _hover: { borderColor: "whiteAlpha.400" },
+                  borderColor: 'whiteAlpha.300',
+                  _hover: { borderColor: 'whiteAlpha.400' },
                   _focusVisible: {
-                    borderColor: "blue.300",
-                    boxShadow: "0 1px 0 0 var(--chakra-colors-blue-300)",
+                    borderColor: 'blue.300',
+                    boxShadow: '0 1px 0 0 var(--chakra-colors-blue-300)',
                   },
                 }}
                 {...lockedStyles}
@@ -116,8 +123,8 @@ export function JobStatusSection({
           </DatePicker.Root>
         </Field.Root>
 
-        {(status === "sokt" || status === "intervju") && (
-          <Field.Root>
+        {requiresAppliedAt && (
+          <Field.Root required>
             <Field.Label fontSize="sm" fontWeight="600">
               Datum då du sökte
             </Field.Label>
@@ -127,26 +134,27 @@ export function JobStatusSection({
               value={appliedAt ? [parseDate(appliedAt)] : []}
               onValueChange={(e) => {
                 const value = e.value?.[0];
-                setAppliedAt(value ? value.toString() : "");
+                setAppliedAt(value ? value.toString() : '');
               }}
-              positioning={{ placement: "bottom-start" }}
+              positioning={{ placement: 'bottom-start' }}
             >
               <DatePicker.Control>
                 <DatePicker.Input
                   placeholder="Välj datum"
+                  required
                   bg="transparent"
                   borderColor="gray.300"
-                  _hover={{ borderColor: "gray.400" }}
+                  _hover={{ borderColor: 'gray.400' }}
                   _focusVisible={{
-                    borderColor: "blue.400",
-                    boxShadow: "0 1px 0 0 var(--chakra-colors-blue-400)",
+                    borderColor: 'blue.400',
+                    boxShadow: '0 1px 0 0 var(--chakra-colors-blue-400)',
                   }}
                   _dark={{
-                    borderColor: "whiteAlpha.300",
-                    _hover: { borderColor: "whiteAlpha.400" },
+                    borderColor: 'whiteAlpha.300',
+                    _hover: { borderColor: 'whiteAlpha.400' },
                     _focusVisible: {
-                      borderColor: "blue.300",
-                      boxShadow: "0 1px 0 0 var(--chakra-colors-blue-300)",
+                      borderColor: 'blue.300',
+                      boxShadow: '0 1px 0 0 var(--chakra-colors-blue-300)',
                     },
                   }}
                 />
@@ -179,10 +187,29 @@ export function JobStatusSection({
                 </DatePicker.Positioner>
               </Portal>
             </DatePicker.Root>
+
+            <Field.HelperText>Obligatoriskt när jobbet har sökts.</Field.HelperText>
           </Field.Root>
         )}
 
-        <Field.Root gridColumn={{ base: "auto", md: "1 / -1" }}>
+        {status === 'intervju' && (
+          <Field.Root required gridColumn={{ base: 'auto', md: '1 / -1' }}>
+            <Field.Label fontSize="sm" fontWeight="600">
+              Datum och tid för intervju
+            </Field.Label>
+
+            <Input
+              type="datetime-local"
+              value={interviewAt}
+              onChange={(e) => setInterviewAt(e.target.value)}
+              required
+            />
+
+            <Field.HelperText>Obligatoriskt när status är intervju.</Field.HelperText>
+          </Field.Root>
+        )}
+
+        <Field.Root gridColumn={{ base: 'auto', md: '1 / -1' }}>
           <Field.Label fontSize="sm" fontWeight="600">
             Status
           </Field.Label>
@@ -192,11 +219,12 @@ export function JobStatusSection({
             value={[status]}
             onValueChange={({ value }) => {
               const nextStatus = value[0];
+
               if (nextStatus) {
                 setStatus(nextStatus as JobStatus);
               }
             }}
-            positioning={{ placement: "bottom-start" }}
+            positioning={{ placement: 'bottom-start' }}
             size="md"
           >
             <Select.HiddenSelect />
@@ -205,6 +233,7 @@ export function JobStatusSection({
               <Select.Trigger>
                 <Select.ValueText placeholder="Välj status" />
               </Select.Trigger>
+
               <Select.IndicatorGroup>
                 <Select.Indicator />
               </Select.IndicatorGroup>

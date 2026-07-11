@@ -29,6 +29,10 @@ function formatDate(value: string | Date | null | undefined): string {
   return date.toISOString().split('T')[0];
 }
 
+function getToday(): string {
+  return new Date().toISOString().split('T')[0];
+}
+
 function getAdIdFromUrl(url: string): string | null {
   const match = url.match(/annonser\/(\d+)/);
   return match?.[1] ?? null;
@@ -71,9 +75,10 @@ export function useJobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props)
   const [city, setCity] = useState('');
   const [employmentType, setEmploymentType] = useState('');
   const [occupation, setOccupation] = useState('');
-  const [status, setStatus] = useState<JobStatus>('vill_soka');
+  const [status, setStatus] = useState<JobStatus>('sokt');
   const [deadline, setDeadline] = useState('');
-  const [appliedAt, setAppliedAt] = useState('');
+  const [appliedAt, setAppliedAt] = useState(getToday());
+  const [interviewAt, setInterviewAt] = useState('');
   const [isFetching, setIsFetching] = useState(false);
   const [adSource, setAdSource] = useState<AdSource | null>(null);
 
@@ -81,7 +86,11 @@ export function useJobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props)
   const [isOtherOccupation, setIsOtherOccupation] = useState(false);
 
   const isEditing = editingJob !== null;
-  const isValid = company.trim() !== '' && title.trim() !== '';
+  const requiresAppliedAt = status !== 'vill_soka';
+
+  const isValid =
+    company.trim() !== '' && title.trim() !== '' && (!requiresAppliedAt || appliedAt.trim() !== '');
+
   const canFetch = url.trim() !== '' && !isFetching && !isEditing;
   const fieldsLocked = mode === 'link' && adSource !== null && !isEditing;
 
@@ -102,9 +111,10 @@ export function useJobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props)
     setCity('');
     setEmploymentType('');
     setOccupation('');
-    setStatus('vill_soka');
+    setStatus('sokt');
     setDeadline('');
-    setAppliedAt('');
+    setAppliedAt(getToday());
+    setInterviewAt('');
     setAdSource(null);
     setIsFetching(false);
     setIsOutsideCommuteDistance(false);
@@ -123,6 +133,7 @@ export function useJobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props)
       setStatus(editingJob.status);
       setDeadline(formatDate(editingJob.deadline));
       setAppliedAt(formatDate(editingJob.appliedAt));
+      setInterviewAt(editingJob.interviewAt ?? '');
       setIsOutsideCommuteDistance(editingJob.isOutsideCommuteDistance ?? false);
       setIsOtherOccupation(editingJob.isOtherOccupation ?? false);
       setAdSource(null);
@@ -232,6 +243,28 @@ export function useJobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props)
       return;
     }
 
+    if (requiresAppliedAt && !appliedAt.trim()) {
+      toaster.create({
+        title: 'Saknar ansökningsdatum',
+        description: 'Ange vilket datum du sökte jobbet.',
+        type: 'error',
+        closable: true,
+      });
+      return;
+    }
+
+    if (status === 'intervju' && !interviewAt) {
+      toaster.create({
+        title: 'Saknar intervjutid',
+        description: 'Ange datum och tid för intervjun.',
+        type: 'error',
+        closable: true,
+      });
+      return;
+    }
+
+    const normalizedAppliedAt = requiresAppliedAt ? formatDate(appliedAt) : '';
+
     const jobData: Job = editingJob
       ? {
           ...editingJob,
@@ -243,7 +276,8 @@ export function useJobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props)
           occupation: occupation.trim(),
           status,
           deadline: formatDate(deadline),
-          appliedAt: formatDate(appliedAt),
+          appliedAt: normalizedAppliedAt,
+          interviewAt,
           adId: getAdIdFromUrl(url) ?? editingJob.adId,
           isOutsideCommuteDistance,
           isOtherOccupation,
@@ -258,7 +292,8 @@ export function useJobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props)
           occupation: occupation.trim(),
           status,
           deadline: formatDate(deadline),
-          appliedAt: formatDate(appliedAt),
+          appliedAt: normalizedAppliedAt,
+          interviewAt,
           createdAt: new Date().toISOString(),
           adId: getAdIdFromUrl(url) ?? undefined,
           isOutsideCommuteDistance,
@@ -323,6 +358,9 @@ export function useJobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props)
     setDeadline,
     appliedAt,
     setAppliedAt,
+    requiresAppliedAt,
+    interviewAt,
+    setInterviewAt,
     isOutsideCommuteDistance,
     setIsOutsideCommuteDistance,
     isOtherOccupation,
