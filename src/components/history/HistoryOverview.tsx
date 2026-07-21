@@ -1,12 +1,4 @@
-import {
-  Badge,
-  Box,
-  Grid,
-  Heading,
-  HStack,
-  Stack,
-  Text,
-} from '@chakra-ui/react';
+import { Box, Grid, Heading, HStack, Stack, Text } from '@chakra-ui/react';
 import type { StatItem } from '../../utils/history-stats';
 import HistoryStatList from './HistoryStatList';
 
@@ -39,11 +31,7 @@ function SummaryItem({ label, value, description }: SummaryItemProps) {
       borderColor="border.subtle"
     >
       <Stack gap="1.5">
-        <Heading
-          size={{ base: 'lg', md: 'xl' }}
-          lineHeight="1.1"
-          overflowWrap="anywhere"
-        >
+        <Heading size={{ base: 'lg', md: 'xl' }} lineHeight="1.1" overflowWrap="anywhere">
           {value}
         </Heading>
 
@@ -71,11 +59,9 @@ export default function HistoryOverview({
   allOccupationStats,
   topCompanies,
 }: Props) {
-  const appliedPercentage =
-    totalJobs > 0 ? Math.round((appliedJobsCount / totalJobs) * 100) : 0;
+  const appliedPercentage = totalJobs > 0 ? Math.round((appliedJobsCount / totalJobs) * 100) : 0;
 
-  const savedOnlyPercentage =
-    totalJobs > 0 ? Math.round((savedOnlyCount / totalJobs) * 100) : 0;
+  const savedOnlyPercentage = totalJobs > 0 ? Math.round((savedOnlyCount / totalJobs) * 100) : 0;
 
   const mostActiveMonthCount = mostActiveMonth?.[1].length ?? 0;
 
@@ -92,9 +78,7 @@ export default function HistoryOverview({
           Översikt
         </Text>
 
-        <Heading size={{ base: 'lg', md: 'xl' }}>
-          Din jobbhistorik
-        </Heading>
+        <Heading size={{ base: 'lg', md: 'xl' }}>Din jobbhistorik</Heading>
 
         <HStack gap="2" wrap="wrap">
           <Text color="fg.muted" fontSize="sm">
@@ -106,7 +90,10 @@ export default function HistoryOverview({
               <Text color="fg.subtle">•</Text>
 
               <Text color="fg.muted" fontSize="sm">
-                Sedan <Text as="span" textTransform="capitalize">{startedMonth}</Text>
+                Sedan{' '}
+                <Text as="span" textTransform="capitalize">
+                  {startedMonth}
+                </Text>
               </Text>
             </>
           )}
@@ -136,11 +123,7 @@ export default function HistoryOverview({
           <SummaryItem
             label="Vanligaste rollen"
             value={topOccupation?.name ?? 'Ingen ännu'}
-            description={
-              topOccupation
-                ? `${topOccupation.count} jobb`
-                : 'Ingen statistik ännu'
-            }
+            description={topOccupation ? `${topOccupation.count} jobb` : 'Ingen statistik ännu'}
           />
         </Box>
 
@@ -148,20 +131,12 @@ export default function HistoryOverview({
           <SummaryItem
             label="Mest aktiv månad"
             value={mostActiveMonth?.[0] ?? 'Ingen ännu'}
-            description={
-              mostActiveMonth
-                ? `${mostActiveMonthCount} jobb`
-                : 'Ingen statistik ännu'
-            }
+            description={mostActiveMonth ? `${mostActiveMonthCount} jobb` : 'Ingen statistik ännu'}
           />
         </Box>
       </Grid>
 
-      <Box
-        borderTopWidth="1px"
-        borderColor="border.subtle"
-        pt={{ base: '5', md: '7' }}
-      >
+      <Box borderTopWidth="1px" borderColor="border.subtle" pt={{ base: '5', md: '7' }}>
         <Grid
           templateColumns={{ base: '1fr', lg: 'repeat(2, minmax(0, 1fr))' }}
           gap={{ base: '7', lg: '10' }}
