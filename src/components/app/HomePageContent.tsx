@@ -41,7 +41,7 @@ export function HomePageContent({
   onEdit,
 }: Props) {
   return (
-    <Stack gap="8">
+    <Stack gap={{ base: '5', md: '8' }}>
       <AppHeader search={search} onSearchChange={onSearchChange} />
 
       <Suspense fallback={null}>

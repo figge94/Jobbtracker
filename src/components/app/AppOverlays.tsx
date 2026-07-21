@@ -20,17 +20,17 @@ export function AppOverlays({
   onUpdate,
   onCloseModal,
 }: AppOverlaysProps) {
-  const appliedJobs = useMemo(() => {
-    return jobs.filter((job) => job.status !== 'vill_soka');
-  }, [jobs]);
+  const appliedJobs = useMemo(() => jobs.filter((job) => job.status !== 'vill_soka'), [jobs]);
 
-  const outsideCommuteCount = useMemo(() => {
-    return appliedJobs.filter((job) => job.isOutsideCommuteDistance).length;
-  }, [appliedJobs]);
+  const outsideCommuteCount = useMemo(
+    () => appliedJobs.filter((job) => job.isOutsideCommuteDistance).length,
+    [appliedJobs]
+  );
 
-  const otherOccupationCount = useMemo(() => {
-    return appliedJobs.filter((job) => job.isOtherOccupation).length;
-  }, [appliedJobs]);
+  const otherOccupationCount = useMemo(
+    () => appliedJobs.filter((job) => job.isOtherOccupation).length,
+    [appliedJobs]
+  );
 
   return (
     <>

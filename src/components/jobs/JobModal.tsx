@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { CloseButton, Dialog, Portal } from '@chakra-ui/react';
+import { Box, CloseButton, Dialog, Portal, Spinner } from '@chakra-ui/react';
 import type { Job } from '../../types/job';
 
 const JobForm = lazy(() => import('./form/JobForm'));
@@ -19,35 +19,72 @@ export default function JobModal({ open, onClose, onAdd, onUpdate, editingJob }:
     <Dialog.Root
       open={open}
       onOpenChange={(details) => {
-        if (!details.open) onClose();
+        if (!details.open) {
+          onClose();
+        }
       }}
-      size="lg"
+      size={{ base: 'full', md: 'lg' }}
+      scrollBehavior="inside"
     >
       <Portal>
         <Dialog.Backdrop />
-        <Dialog.Positioner p="0">
-          <Dialog.Content maxW="4xl" border="none" boxShadow="0" borderRadius="2xl">
-            <Dialog.CloseTrigger asChild>
-              <CloseButton
-                position="absolute"
-                top="4"
-                right="4"
-                zIndex="1"
-                rounded="full"
-                variant="ghost"
-              />
-            </Dialog.CloseTrigger>
 
-            <Dialog.Body overflowY="auto" px="6" py="6" pt="8">
-              <Suspense fallback={null}>
+        <Dialog.Positioner
+          p={{ base: '0', md: '4' }}
+          alignItems={{ base: 'stretch', md: 'center' }}
+        >
+          <Dialog.Content
+            w="full"
+            maxW={{ base: 'none', md: '4xl' }}
+            h={{ base: '100dvh', md: 'auto' }}
+            maxH={{ base: '100dvh', md: 'calc(100dvh - 2rem)' }}
+            border="none"
+            boxShadow={{ base: 'none', md: 'xl' }}
+            borderRadius={{ base: '0', md: '2xl' }}
+            overflow="hidden"
+          >
+            <Box
+              position="sticky"
+              top="0"
+              zIndex="2"
+              display="flex"
+              justifyContent="flex-end"
+              px={{ base: '3', md: '4' }}
+              pt={{ base: '3', md: '4' }}
+              pb="1"
+              bg="bg"
+            >
+              <Dialog.CloseTrigger asChild>
+                <CloseButton rounded="full" variant="ghost" aria-label="Stäng formulär" />
+              </Dialog.CloseTrigger>
+            </Box>
+
+            <Dialog.Body
+              overflowY="auto"
+              px={{ base: '4', sm: '5', md: '6' }}
+              pt={{ base: '2', md: '3' }}
+              pb={{
+                base: 'calc(1.5rem + env(safe-area-inset-bottom))',
+                md: '6',
+              }}
+            >
+              <Suspense
+                fallback={
+                  <Box minH="240px" display="grid" placeItems="center">
+                    <Spinner />
+                  </Box>
+                }
+              >
                 <JobForm
                   isEditing={isEditing}
                   onClose={onClose}
                   onAdd={(job) => {
                     const wasAdded = onAdd(job);
+
                     if (wasAdded) {
                       onClose();
                     }
+
                     return wasAdded;
                   }}
                   editingJob={editingJob}

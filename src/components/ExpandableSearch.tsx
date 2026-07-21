@@ -1,6 +1,6 @@
-import { Box, Input, InputGroup } from "@chakra-ui/react";
-import { LuSearch } from "react-icons/lu";
-import { useState } from "react";
+import { Box, Input, InputGroup } from '@chakra-ui/react';
+import { LuSearch } from 'react-icons/lu';
+import { useState } from 'react';
 
 type Props = {
   value: string;
@@ -9,11 +9,13 @@ type Props = {
 
 export function ExpandableSearch({ value, onChange }: Props) {
   const [active, setActive] = useState(false);
+
   const expanded = active || value.length > 0;
 
   return (
     <Box
-      w={expanded ? "280px" : "42px"}
+      w={expanded ? { base: 'min(220px, 70vw)', sm: '280px' } : '42px'}
+      maxW="100%"
       h="42px"
       transition="width 0.22s ease"
       borderRadius="full"
@@ -23,36 +25,40 @@ export function ExpandableSearch({ value, onChange }: Props) {
       borderColor="border.muted"
       display="flex"
       alignItems="center"
-      justifyContent={expanded ? "flex-start" : "center"}
+      justifyContent={expanded ? 'flex-start' : 'center'}
+      flexShrink="1"
       _dark={{
-        bg: "whiteAlpha.100",
-        borderColor: "whiteAlpha.200",
+        bg: 'whiteAlpha.100',
+        borderColor: 'whiteAlpha.200',
       }}
       _hover={{
-        borderColor: "border.emphasized",
+        borderColor: 'border.emphasized',
       }}
     >
-      <InputGroup startElement={<LuSearch size={16} />}>
+      <InputGroup startElement={<LuSearch size={16} />} w="full">
         <Input
           value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={expanded ? "Sök jobb..." : ""}
+          onChange={(event) => onChange(event.target.value)}
+          placeholder={expanded ? 'Sök jobb...' : ''}
           h="42px"
-          pl={expanded ? "10" : "0"}
-          pr="4"
+          minW="0"
+          pl={expanded ? '10' : '0'}
+          pr={expanded ? '4' : '0'}
           border="none"
           outline="none"
           boxShadow="none"
           bg="transparent"
           _focus={{
-            outline: "none",
-            boxShadow: "none",
+            outline: 'none',
+            boxShadow: 'none',
           }}
           onFocus={() => setActive(true)}
           onBlur={() => {
-            if (!value) setActive(false);
+            if (!value) {
+              setActive(false);
+            }
           }}
-          cursor={expanded ? "text" : "pointer"}
+          cursor={expanded ? 'text' : 'pointer'}
         />
       </InputGroup>
     </Box>

@@ -1,4 +1,12 @@
-import { Badge, Box, Grid, Heading, Stack, Text } from '@chakra-ui/react';
+import {
+  Badge,
+  Box,
+  Grid,
+  Heading,
+  HStack,
+  Stack,
+  Text,
+} from '@chakra-ui/react';
 import type { StatItem } from '../../utils/history-stats';
 import HistoryStatList from './HistoryStatList';
 
@@ -13,42 +21,40 @@ type Props = {
   topCompanies: StatItem[];
 };
 
-type SummaryCardProps = {
+type SummaryItemProps = {
   label: string;
   value: string | number;
-  badgeText?: string | number;
+  description?: string;
 };
 
-function SummaryCard({ label, value, badgeText }: SummaryCardProps) {
+function SummaryItem({ label, value, description }: SummaryItemProps) {
   return (
     <Box
-      bg="bg"
-      borderRadius="2xl"
-      px="5"
-      py="5"
+      minW="0"
+      px={{ base: '3.5', md: '4' }}
+      py={{ base: '4', md: '5' }}
+      bg="bg.subtle"
+      borderRadius="xl"
       borderWidth="1px"
       borderColor="border.subtle"
-      boxShadow="xs"
     >
-      <Stack gap="3">
-        <Text
-          fontSize="xs"
-          textTransform="uppercase"
-          letterSpacing="0.08em"
-          color="fg.muted"
-          fontWeight="semibold"
+      <Stack gap="1.5">
+        <Heading
+          size={{ base: 'lg', md: 'xl' }}
+          lineHeight="1.1"
+          overflowWrap="anywhere"
         >
-          {label}
-        </Text>
-
-        <Heading size="md" lineHeight="1.2">
           {value}
         </Heading>
 
-        {badgeText !== undefined && (
-          <Badge alignSelf="flex-start" variant="subtle" borderRadius="full" px="2.5" py="0.5">
-            {badgeText}
-          </Badge>
+        <Text fontSize="sm" fontWeight="semibold">
+          {label}
+        </Text>
+
+        {description && (
+          <Text fontSize="xs" color="fg.muted">
+            {description}
+          </Text>
         )}
       </Stack>
     </Box>
@@ -65,84 +71,134 @@ export default function HistoryOverview({
   allOccupationStats,
   topCompanies,
 }: Props) {
+  const appliedPercentage =
+    totalJobs > 0 ? Math.round((appliedJobsCount / totalJobs) * 100) : 0;
+
+  const savedOnlyPercentage =
+    totalJobs > 0 ? Math.round((savedOnlyCount / totalJobs) * 100) : 0;
+
+  const mostActiveMonthCount = mostActiveMonth?.[1].length ?? 0;
+
   return (
-    <Box
-      bg="bg.panel"
-      borderRadius="3xl"
-      px={{ base: '5', md: '7' }}
-      py={{ base: '5', md: '7' }}
-      borderWidth="1px"
-      borderColor="border.subtle"
-      boxShadow="sm"
-    >
-      <Stack gap="7">
-        <Stack gap="2">
-          <Text
-            fontSize="xs"
-            textTransform="uppercase"
-            letterSpacing="0.08em"
-            color="fg.muted"
-            fontWeight="semibold"
-          >
-            Översikt
+    <Stack gap={{ base: '6', md: '8' }}>
+      <Stack gap="2">
+        <Text
+          fontSize="xs"
+          textTransform="uppercase"
+          letterSpacing="0.08em"
+          color="fg.muted"
+          fontWeight="semibold"
+        >
+          Översikt
+        </Text>
+
+        <Heading size={{ base: 'lg', md: 'xl' }}>
+          Din jobbhistorik
+        </Heading>
+
+        <HStack gap="2" wrap="wrap">
+          <Text color="fg.muted" fontSize="sm">
+            {totalJobs} jobb sparade
           </Text>
 
-          <Heading size="lg">Din jobbhistorik</Heading>
+          {startedMonth && (
+            <>
+              <Text color="fg.subtle">•</Text>
 
-          <Text color="fg.muted" fontSize="sm" maxW="2xl">
-            Sparat {totalJobs} jobb{startedMonth ? ` sedan ${startedMonth}` : ''}.
-          </Text>
-        </Stack>
+              <Text color="fg.muted" fontSize="sm">
+                Sedan <Text as="span" textTransform="capitalize">{startedMonth}</Text>
+              </Text>
+            </>
+          )}
+        </HStack>
+      </Stack>
 
-        <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', xl: 'repeat(4, 1fr)' }} gap="4">
-          <SummaryCard label="Totalt sökta jobb" value={appliedJobsCount} />
-          <SummaryCard label="Sparade men ej sökta" value={savedOnlyCount} />
-          <SummaryCard
+      <Grid
+        templateColumns={{
+          base: 'repeat(2, minmax(0, 1fr))',
+          lg: 'repeat(4, minmax(0, 1fr))',
+        }}
+        gap={{ base: '3', md: '4' }}
+      >
+        <SummaryItem
+          label="Sökta jobb"
+          value={appliedJobsCount}
+          description={`${appliedPercentage}% av alla sparade`}
+        />
+
+        <SummaryItem
+          label="Inte sökta"
+          value={savedOnlyCount}
+          description={`${savedOnlyPercentage}% av alla sparade`}
+        />
+
+        <Box gridColumn={{ base: '1 / -1', sm: 'auto' }}>
+          <SummaryItem
             label="Vanligaste rollen"
-            value={topOccupation ? topOccupation.name : 'Ingen ännu'}
-            badgeText={topOccupation ? topOccupation.count : undefined}
+            value={topOccupation?.name ?? 'Ingen ännu'}
+            description={
+              topOccupation
+                ? `${topOccupation.count} jobb`
+                : 'Ingen statistik ännu'
+            }
           />
-          <SummaryCard
+        </Box>
+
+        <Box gridColumn={{ base: '1 / -1', sm: 'auto' }}>
+          <SummaryItem
             label="Mest aktiv månad"
-            value={mostActiveMonth ? mostActiveMonth[0] : 'Ingen ännu'}
-            badgeText={mostActiveMonth ? mostActiveMonth[1].length : undefined}
+            value={mostActiveMonth?.[0] ?? 'Ingen ännu'}
+            description={
+              mostActiveMonth
+                ? `${mostActiveMonthCount} jobb`
+                : 'Ingen statistik ännu'
+            }
           />
-        </Grid>
+        </Box>
+      </Grid>
 
-        <Grid templateColumns={{ base: '1fr', xl: '1fr 1fr' }} gap="5">
-          <Box
-            bg="bg"
-            borderRadius="2xl"
-            px={{ base: '4', md: '5' }}
-            py={{ base: '4', md: '5' }}
-            borderWidth="1px"
-            borderColor="border.subtle"
-            boxShadow="xs"
-          >
+      <Box
+        borderTopWidth="1px"
+        borderColor="border.subtle"
+        pt={{ base: '5', md: '7' }}
+      >
+        <Grid
+          templateColumns={{ base: '1fr', lg: 'repeat(2, minmax(0, 1fr))' }}
+          gap={{ base: '7', lg: '10' }}
+        >
+          <Stack gap="4">
+            <Box>
+              <Heading size="md">Roller</Heading>
+
+              <Text color="fg.muted" fontSize="sm" mt="1">
+                Vanligaste rollerna bland alla jobb.
+              </Text>
+            </Box>
+
             <HistoryStatList
-              title="Totalt per roll"
+              title=""
               items={allOccupationStats}
-              emptyText="Ingen total statistik ännu."
+              emptyText="Ingen rollstatistik ännu."
             />
-          </Box>
+          </Stack>
 
-          <Box
-            bg="bg"
-            borderRadius="2xl"
-            px={{ base: '4', md: '5' }}
-            py={{ base: '4', md: '5' }}
-            borderWidth="1px"
-            borderColor="border.subtle"
-            boxShadow="xs"
-          >
+          <Stack gap="4">
+            <Box>
+              <Heading size="md">Företag</Heading>
+
+              <Text color="fg.muted" fontSize="sm" mt="1">
+                Företagen du sparat flest jobb från.
+              </Text>
+            </Box>
+
             <HistoryStatList
-              title="Toppföretag"
+              title=""
               items={topCompanies.slice(0, 5)}
               emptyText="Ingen företagsstatistik ännu."
             />
-          </Box>
+          </Stack>
         </Grid>
-      </Stack>
-    </Box>
+      </Box>
+    </Stack>
   );
 }

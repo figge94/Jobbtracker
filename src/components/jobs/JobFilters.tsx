@@ -1,13 +1,22 @@
-import { Box, Field, HStack, NativeSelect } from "@chakra-ui/react";
-import type { JobStatus } from "../../types/job";
-import { JOB_STATUSES, getStatusLabel } from "../../utils/job-status";
-import { JobViewToggle } from "./JobViewToggle";
+import {
+  Box,
+  Field,
+  HStack,
+  NativeSelect,
+  Stack,
+} from '@chakra-ui/react';
+import type { JobStatus } from '../../types/job';
+import {
+  JOB_STATUSES,
+  getStatusLabel,
+} from '../../utils/job-status';
+import { JobViewToggle } from './JobViewToggle';
 
 type Props = {
-  statusFilter: JobStatus | "alla";
-  onStatusFilterChange: (value: JobStatus | "alla") => void;
-  viewMode: "list" | "board";
-  onViewModeChange: (value: "list" | "board") => void;
+  statusFilter: JobStatus | 'alla';
+  onStatusFilterChange: (value: JobStatus | 'alla') => void;
+  viewMode: 'list' | 'board';
+  onViewModeChange: (value: 'list' | 'board') => void;
 };
 
 export function JobFilters({
@@ -18,29 +27,42 @@ export function JobFilters({
 }: Props) {
   return (
     <Box
-      p="4"
-      borderWidth="1px"
-      borderRadius="2xl"
-      bg="white"
-      borderColor="gray.200"
-      _dark={{
-        bg: "whiteAlpha.50",
-        borderColor: "whiteAlpha.200",
-      }}
+      py="3"
+      borderBottomWidth="1px"
+      borderColor="border.subtle"
     >
-      <Field.Root>
-        <Field.Label color="fg.muted">Filtrera på status</Field.Label>
+      <Stack
+        direction={{ base: 'column', sm: 'row' }}
+        align={{ base: 'stretch', sm: 'flex-end' }}
+        justify="space-between"
+        gap="3"
+      >
+        <Field.Root maxW={{ sm: '260px' }}>
+          <Field.Label
+            fontSize="xs"
+            color="fg.muted"
+            fontWeight="medium"
+          >
+            Status
+          </Field.Label>
 
-        <HStack align="center" gap="3" w="100%">
-          <NativeSelect.Root flex="1">
+          <NativeSelect.Root>
             <NativeSelect.Field
-              w="100%"
               value={statusFilter}
-              onChange={(e) =>
-                onStatusFilterChange(e.target.value as JobStatus | "alla")
+              onChange={(event) =>
+                onStatusFilterChange(
+                  event.target.value as JobStatus | 'alla'
+                )
               }
+              borderRadius="xl"
+              bg="bg.subtle"
+              borderColor="border.subtle"
+              _hover={{
+                borderColor: 'border.emphasized',
+              }}
             >
-              <option value="alla">Alla</option>
+              <option value="alla">Alla statusar</option>
+
               {JOB_STATUSES.map((status) => (
                 <option key={status} value={status}>
                   {getStatusLabel(status)}
@@ -50,12 +72,15 @@ export function JobFilters({
 
             <NativeSelect.Indicator />
           </NativeSelect.Root>
+        </Field.Root>
 
-          <Box ml="auto">
-            <JobViewToggle viewMode={viewMode} onChange={onViewModeChange} />
-          </Box>
+        <HStack justify={{ base: 'flex-end', sm: 'initial' }}>
+          <JobViewToggle
+            viewMode={viewMode}
+            onChange={onViewModeChange}
+          />
         </HStack>
-      </Field.Root>
+      </Stack>
     </Box>
   );
 }

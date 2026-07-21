@@ -1,6 +1,7 @@
-import { Badge, Box, HStack, Text, VStack } from "@chakra-ui/react";
-import { LuClock3 } from "react-icons/lu";
-import { getDaysLeft } from "../../utils/job-deadline";
+import { Box, HStack, Stack, Text } from '@chakra-ui/react';
+import { LuClock3 } from 'react-icons/lu';
+import { getDaysLeft } from '../../utils/job-deadline';
+import { formatDeadlineDate, getDeadlineState } from '../../utils/job-deadline-display';
 
 type Props = {
   deadline: string;
@@ -9,93 +10,43 @@ type Props = {
 
 export function JobDeadline({ deadline, compact = false }: Props) {
   const daysLeft = getDaysLeft(deadline);
-
-  const formattedDate = new Date(deadline).toLocaleDateString("sv-SE", {
-    day: "numeric",
-    month: compact ? "short" : "long",
-    year: "numeric",
-  });
-
-  let label = `${daysLeft} dagar kvar`;
-  let colorPalette: "red" | "orange" | "green" = "green";
-  let bg = "green.50";
-  let borderColor = "green.200";
-  let darkBg = "green.950";
-  let darkBorderColor = "green.800";
-
-  if (daysLeft < 0) {
-    label = "Utgången";
-    colorPalette = "red";
-    bg = "red.50";
-    borderColor = "red.200";
-    darkBg = "red.950";
-    darkBorderColor = "red.800";
-  } else if (daysLeft === 0) {
-    label = "Sista dagen";
-    colorPalette = "red";
-    bg = "red.50";
-    borderColor = "red.200";
-    darkBg = "red.950";
-    darkBorderColor = "red.800";
-  } else if (daysLeft <= 7) {
-    colorPalette = "orange";
-    bg = "orange.50";
-    borderColor = "orange.200";
-    darkBg = "orange.950";
-    darkBorderColor = "orange.800";
-  }
+  const state = getDeadlineState(daysLeft);
+  const formattedDate = formatDeadlineDate(deadline, compact);
 
   return (
-    <Box
+    <HStack
+      gap="3"
       px="3"
-      py="2"
-      borderRadius="lg"
+      py="2.5"
+      borderRadius="xl"
       borderWidth="1px"
-      borderColor={borderColor}
-      bg={bg}
-      opacity={0.95}
+      borderColor={state.borderColor}
+      bg={state.bg}
+      align="center"
       _dark={{
-        borderColor: darkBorderColor,
-        bg: darkBg,
+        borderColor: state.darkBorderColor,
+        bg: state.darkBg,
       }}
     >
-      <HStack justify="space-between" align="center" gap="3">
-        <HStack gap="2.5" minW={0}>
-          <Box
-            p="1.25"
-            borderRadius="full"
-            bg="blackAlpha.100"
-            color="fg.muted"
-            _dark={{ bg: "whiteAlpha.100" }}
-          >
-            <LuClock3 size={13} />
-          </Box>
+      <Box
+        display="flex"
+        alignItems="center"
+        color={`${state.colorPalette}.600`}
+        _dark={{ color: `${state.colorPalette}.300` }}
+        flexShrink={0}
+      >
+        <LuClock3 size={16} />
+      </Box>
 
-          <VStack align="start" gap="0" minW={0}>
-            <Text fontSize="sm" fontWeight="semibold" lineHeight="1.2">
-              {label}
-            </Text>
+      <Stack gap="0" minW="0">
+        <Text fontSize="sm" fontWeight="semibold" lineHeight="1.3">
+          {state.label}
+        </Text>
 
-            <Text fontSize="xs" color="fg.muted" lineHeight="1.2">
-              {compact ? formattedDate : `Sista ansökan: ${formattedDate}`}
-            </Text>
-          </VStack>
-        </HStack>
-
-        <Badge
-          colorPalette={colorPalette}
-          variant="subtle"
-          borderRadius="full"
-          px="1.5"
-          py="0.5"
-          fontSize="0.7rem"
-          fontWeight="medium"
-          whiteSpace="nowrap"
-          flexShrink={0}
-        >
-          {daysLeft >= 0 ? `${daysLeft}d` : "Stängd"}
-        </Badge>
-      </HStack>
-    </Box>
+        <Text fontSize="xs" color="fg.muted" lineHeight="1.3">
+          {compact ? formattedDate : `Sista ansökan ${formattedDate}`}
+        </Text>
+      </Stack>
+    </HStack>
   );
 }

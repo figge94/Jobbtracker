@@ -1,4 +1,6 @@
-import { Heading, HStack, Tabs, Text } from '@chakra-ui/react';
+import { Box, Heading, Stack, Text } from '@chakra-ui/react';
+import HistoryMonthSelect from './HistoryMonthSelect';
+import HistoryMonthTabList from './HistoryMonthTabList';
 
 type Props = {
   monthKeys: string[];
@@ -8,8 +10,8 @@ type Props = {
 
 export default function HistoryMonthTabs({ monthKeys, selectedMonth, onChange }: Props) {
   return (
-    <>
-      <HStack justify="space-between" align="end" wrap="wrap" gap="3">
+    <Stack gap={{ base: '3', md: '4' }}>
+      <Box>
         <Text
           fontSize="xs"
           textTransform="uppercase"
@@ -20,33 +22,39 @@ export default function HistoryMonthTabs({ monthKeys, selectedMonth, onChange }:
           Månad för månad
         </Text>
 
-        <Heading size="md">Välj period</Heading>
-      </HStack>
+        <Heading size={{ base: 'sm', md: 'md' }} mt="1">
+          Välj period
+        </Heading>
+      </Box>
 
-      <Tabs.Root value={selectedMonth} onValueChange={(details) => onChange(details.value)}>
-        <Tabs.List bg="transparent" p="0" display="flex" flexWrap="wrap" gap="2">
-          {monthKeys.map((month) => (
-            <Tabs.Trigger
-              key={month}
-              value={month}
-              textTransform="capitalize"
-              borderRadius="full"
-              px="4"
-              py="2"
-              fontWeight="medium"
-              bg="bg"
-              borderWidth="1px"
-              borderColor="border.subtle"
-              _selected={{
-                bg: 'colorPalette.subtle',
-                borderColor: 'colorPalette.muted',
-              }}
-            >
-              {month}
-            </Tabs.Trigger>
-          ))}
-        </Tabs.List>
-      </Tabs.Root>
-    </>
+      {monthKeys.length === 0 ? (
+        <Box
+          bg="bg.subtle"
+          borderRadius="xl"
+          px="4"
+          py="5"
+          borderWidth="1px"
+          borderColor="border.subtle"
+        >
+          <Text color="fg.muted" fontSize="sm">
+            Det finns ingen historik ännu.
+          </Text>
+        </Box>
+      ) : (
+        <>
+          <HistoryMonthSelect
+            monthKeys={monthKeys}
+            selectedMonth={selectedMonth}
+            onChange={onChange}
+          />
+
+          <HistoryMonthTabList
+            monthKeys={monthKeys}
+            selectedMonth={selectedMonth}
+            onChange={onChange}
+          />
+        </>
+      )}
+    </Stack>
   );
 }

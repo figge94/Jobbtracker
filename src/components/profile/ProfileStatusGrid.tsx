@@ -1,4 +1,4 @@
-import { Box, Card, SimpleGrid, Stack, Text } from '@chakra-ui/react';
+import { Badge, HStack, Stack, Text } from '@chakra-ui/react';
 import type { JobStatus } from '../../types/job';
 import { JOB_STATUSES, getStatusColor, getStatusLabel } from '../../utils/job-status';
 
@@ -19,30 +19,27 @@ export default function ProfileStatusGrid({ stats }: Props) {
         Status
       </Text>
 
-      <SimpleGrid columns={2} gap="3">
-        {JOB_STATUSES.map((status) => (
-          <Card.Root
+      <Stack gap="0">
+        {JOB_STATUSES.map((status, index) => (
+          <HStack
             key={status}
-            borderRadius="xl"
-            borderWidth="1px"
+            justify="space-between"
+            py="3"
+            borderBottomWidth={index < JOB_STATUSES.length - 1 ? '1px' : '0'}
             borderColor="border.subtle"
-            bg="bg.panel"
-            overflow="hidden"
           >
-            <Box h="1.5" bg={`${getStatusColor(status)}.400`} />
-            <Card.Body p="3">
-              <Stack gap="1">
-                <Text fontSize="xs" color="fg.muted">
-                  {getStatusLabel(status)}
-                </Text>
-                <Text fontSize="2xl" lineHeight="1" fontWeight="semibold">
-                  {stats[status]}
-                </Text>
-              </Stack>
-            </Card.Body>
-          </Card.Root>
+            <HStack gap="3">
+              <Badge boxSize="3" borderRadius="full" bg={`${getStatusColor(status)}.400`} p="0" />
+
+              <Text fontWeight="medium">{getStatusLabel(status)}</Text>
+            </HStack>
+
+            <Text fontWeight="bold" fontSize="lg" fontVariantNumeric="tabular-nums">
+              {stats[status]}
+            </Text>
+          </HStack>
         ))}
-      </SimpleGrid>
+      </Stack>
     </Stack>
   );
 }

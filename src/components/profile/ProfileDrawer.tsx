@@ -26,21 +26,37 @@ export default function ProfileDrawer({
   otherOccupationCount,
 }: Props) {
   return (
-    <Drawer.Root open={open} onOpenChange={(e) => !e.open && onClose()}>
+    <Drawer.Root
+      open={open}
+      placement="end"
+      onOpenChange={(event) => {
+        if (!event.open) {
+          onClose();
+        }
+      }}
+    >
       <Drawer.Backdrop />
+
       <Drawer.Positioner>
-        <Drawer.Content>
-          <Drawer.Header pb="3">
-            <Stack gap="1">
-              <Drawer.Title>Profil</Drawer.Title>
+        <Drawer.Content maxW={{ base: 'full', sm: '420px' }} bg="bg.canvas">
+          <Drawer.Header
+            px={{ base: '5', md: '6' }}
+            pt={{ base: '5', md: '6' }}
+            pb="4"
+            borderBottomWidth="1px"
+            borderColor="border.subtle"
+          >
+            <Stack gap="1" pr="8">
+              <Drawer.Title fontSize="xl">Profil</Drawer.Title>
+
               <Text fontSize="sm" color="fg.muted">
                 Din översikt och progression.
               </Text>
             </Stack>
           </Drawer.Header>
 
-          <Drawer.Body pb="6">
-            <Stack gap="5">
+          <Drawer.Body px={{ base: '5', md: '6' }} py="5">
+            <Stack gap="6">
               <ProfileSummaryCard
                 totalJobs={totalJobs}
                 appliedJobs={stats.sokt}
@@ -52,12 +68,20 @@ export default function ProfileDrawer({
               <ProfileStatusGrid stats={stats} />
 
               <ProfileCityStatsCard cityStats={cityStats} />
-
-              <Button onClick={onOpenHistory} variant="outline" size="lg" w="full">
-                Visa historik
-              </Button>
             </Stack>
           </Drawer.Body>
+
+          <Drawer.Footer
+            px={{ base: '5', md: '6' }}
+            py="4"
+            borderTopWidth="1px"
+            borderColor="border.subtle"
+            bg="bg.panel"
+          >
+            <Button onClick={onOpenHistory} variant="solid" size="lg" w="full">
+              Visa fullständig historik
+            </Button>
+          </Drawer.Footer>
 
           <Drawer.CloseTrigger />
         </Drawer.Content>

@@ -1,26 +1,15 @@
 import { useState } from 'react';
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  Dialog,
-  Flex,
-  Link,
-  Portal,
-  Stack,
-  Text,
-  HStack,
-} from '@chakra-ui/react';
-import type { Job, JobStatus } from '../../types/job';
-import { getStatusColor } from '../../utils/job-status';
-import { JobStatusSelect } from './JobStatusSelect';
-import { JobDeadline } from './JobDeadline';
-import { JobMeta } from './JobMeta';
-import { JobActions } from './JobActions';
-import { motion, useMotionValue, animate } from 'framer-motion';
-import { toaster } from '../ui/toaster';
+import { Badge, Box, Card, HStack, Link, Stack, Text } from '@chakra-ui/react';
+import { animate, motion, useMotionValue } from 'framer-motion';
 import { LuExternalLink } from 'react-icons/lu';
+import type { Job, JobStatus } from '../../types/job';
+import { getJobDateLabel } from '../../utils/job-date';
+import { getStatusColor } from '../../utils/job-status';
+import { toaster } from '../ui/toaster';
+import { JobCardHeader } from './JobCardHeader';
+import { JobDeadline } from './JobDeadline';
+import { JobDeleteDialog } from './JobDeleteDialog';
+import { JobMeta } from './JobMeta';
 
 const MotionBox = motion.create(Box);
 
@@ -35,8 +24,15 @@ type Props = {
 export function JobCard({ job, onDelete, onStatusChange, onEdit, compact = false }: Props) {
   const [isDragging, setIsDragging] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
   const x = useMotionValue(0);
   const swipeEnabled = !compact;
+  const dateLabel = getJobDateLabel(job);
+
+  const closeDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+    animate(x, 0);
+  };
 
   const openDeleteDialog = () => {
     setDeleteDialogOpen(true);
@@ -55,190 +51,141 @@ export function JobCard({ job, onDelete, onStatusChange, onEdit, compact = false
   };
 
   return (
-    <Box position="relative">
-      {swipeEnabled && (
-        <Box
-          position="absolute"
-          inset="0"
-          bg="red.500"
-          borderRadius="2xl"
-          display="flex"
-          alignItems="center"
-          justifyContent="flex-end"
-          px="6"
-          color="white"
-          fontWeight="bold"
-          opacity={isDragging ? 1 : 0}
-          transition="opacity 0.2s"
-        >
-          Ta bort
-        </Box>
-      )}
+    <>
+      <Box position="relative">
+        {swipeEnabled && (
+          <Box
+            position="absolute"
+            inset="0"
+            bg="red.500"
+            borderRadius={{ base: 'xl', md: '2xl' }}
+            display="flex"
+            alignItems="center"
+            justifyContent="flex-end"
+            px="6"
+            color="white"
+            fontWeight="bold"
+            opacity={isDragging ? 1 : 0}
+            transition="opacity 0.2s"
+          >
+            Ta bort
+          </Box>
+        )}
 
-      <MotionBox
-        position="relative"
-        zIndex={1}
-        style={{ x }}
-        drag={swipeEnabled ? 'x' : false}
-        dragConstraints={{ left: -140, right: 0 }}
-        dragElastic={0.08}
-        dragMomentum={false}
-        onDrag={(_, info) => {
-          setIsDragging(info.offset.x < -8);
-        }}
-        onDragStart={() => {
-          if (swipeEnabled) setIsDragging(true);
-        }}
-        onDragEnd={(_, info) => {
-          setIsDragging(false);
+        <MotionBox
+          position="relative"
+          zIndex={1}
+          style={{ x }}
+          drag={swipeEnabled ? 'x' : false}
+          dragConstraints={{ left: -140, right: 0 }}
+          dragElastic={0.08}
+          dragMomentum={false}
+          onDrag={(_, info) => {
+            setIsDragging(info.offset.x < -8);
+          }}
+          onDragStart={() => {
+            if (swipeEnabled) {
+              setIsDragging(true);
+            }
+          }}
+          onDragEnd={(_, info) => {
+            setIsDragging(false);
 
-          if (swipeEnabled && info.offset.x < -120) {
-            openDeleteDialog();
-          } else {
+            if (swipeEnabled && info.offset.x < -120) {
+              openDeleteDialog();
+              return;
+            }
+
             animate(x, 0);
-          }
-        }}
-      >
-        <Card.Root
-          variant="outline"
-          borderRadius="2xl"
-          overflow="hidden"
-          bg="bg.panel"
-          transition="0.2s"
-          _hover={{ shadow: 'md', translateY: '-1px' }}
+          }}
         >
-          {!compact && <Box h="1.5" bg={`${getStatusColor(job.status)}.400`} />}
+          <Card.Root
+            variant="outline"
+            borderRadius="2xl"
+            overflow="hidden"
+            bg="bg.panel"
+            transition="0.2s"
+            _hover={{
+              shadow: 'md',
+              translateY: '-1px',
+            }}
+          >
+            {!compact && (
+              <Box h={{ base: '1', md: '1.5' }} bg={`${getStatusColor(job.status)}.400`} />
+            )}
 
-          <Card.Body p={compact ? '4' : '5'}>
-            <Stack gap={4}>
-              <Flex justify="space-between" align="start" gap="4">
-                <Stack gap="2" flex="1" minW={0}>
-                  <Box>
-                    <Text
-                      fontSize={compact ? 'lg' : 'xl'}
-                      fontWeight="semibold"
-                      lineHeight="1.25"
-                      truncate
-                    >
-                      {job.title}
-                    </Text>
+            <Card.Body p={compact ? '4' : { base: '4', md: '5' }}>
+              <Stack gap={{ base: '3.5', md: '4' }}>
+                <JobCardHeader
+                  job={job}
+                  compact={compact}
+                  onStatusChange={(status) => onStatusChange(job.id, status)}
+                  onEdit={() => onEdit(job)}
+                  onDelete={openDeleteDialog}
+                />
 
-                    <Text mt="1" color="fg.muted" fontWeight="medium">
-                      {job.company}
-                    </Text>
-                  </Box>
-                </Stack>
+                <JobMeta
+                  occupation={job.occupation}
+                  city={job.city}
+                  employmentType={job.employmentType}
+                />
 
-                <Stack gap="2" align="end" minW={compact ? '120px' : '180px'}>
-                  {!compact && (
-                    <Box w="100%">
-                      <JobStatusSelect
-                        value={job.status}
-                        onChange={(status) => onStatusChange(job.id, status)}
-                      />
-                    </Box>
-                  )}
+                {(job.isOutsideCommuteDistance || job.isOtherOccupation) && (
+                  <HStack gap="2" wrap="wrap">
+                    {job.isOutsideCommuteDistance && (
+                      <Badge variant="subtle" borderRadius="full" px="2.5">
+                        Utanför pendling
+                      </Badge>
+                    )}
 
-                  <JobActions onEdit={() => onEdit(job)} onDelete={openDeleteDialog} />
-                </Stack>
-              </Flex>
+                    {job.isOtherOccupation && (
+                      <Badge variant="subtle" borderRadius="full" px="2.5">
+                        Annat yrke
+                      </Badge>
+                    )}
+                  </HStack>
+                )}
 
-              <JobMeta
-                occupation={job.occupation}
-                city={job.city}
-                employmentType={job.employmentType}
-              />
+                {job.url && (
+                  <Link
+                    href={job.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    display="inline-flex"
+                    alignItems="center"
+                    gap="1.5"
+                    color="blue.600"
+                    fontWeight="semibold"
+                    _hover={{
+                      color: 'blue.500',
+                      textDecoration: 'underline',
+                      textUnderlineOffset: '4px',
+                    }}
+                  >
+                    Öppna annons
+                    <Box as={LuExternalLink} boxSize="3.5" />
+                  </Link>
+                )}
 
-              {(job.isOutsideCommuteDistance || job.isOtherOccupation) && (
-                <HStack gap="2" wrap="wrap">
-                  {job.isOutsideCommuteDistance && (
-                    <Badge variant="subtle" borderRadius="full" px="2.5">
-                      Utanför pendling
-                    </Badge>
-                  )}
+                {job.deadline && <JobDeadline deadline={job.deadline} compact />}
 
-                  {job.isOtherOccupation && (
-                    <Badge variant="subtle" borderRadius="full" px="2.5">
-                      Annat yrke
-                    </Badge>
-                  )}
-                </HStack>
-              )}
+                {!compact && dateLabel && (
+                  <Text fontSize="xs" color="fg.muted">
+                    {dateLabel}
+                  </Text>
+                )}
+              </Stack>
+            </Card.Body>
+          </Card.Root>
+        </MotionBox>
+      </Box>
 
-              {job.url && (
-                <Link
-                  href={job.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  display="inline-flex"
-                  alignItems="center"
-                  gap="1.5"
-                  color="blue.600"
-                  fontWeight="semibold"
-                  _hover={{
-                    color: 'blue.500',
-                    textDecoration: 'underline',
-                    textUnderlineOffset: '4px',
-                  }}
-                  transition="color 0.2s"
-                >
-                  Öppna annons
-                  <Box as={LuExternalLink} boxSize="3.5" />
-                </Link>
-              )}
-
-              {job.deadline && <JobDeadline deadline={job.deadline} compact />}
-
-              {!compact && (
-                <Text fontSize="xs" color="fg.muted">
-                  {job.status === 'vill_soka'
-                    ? `Sparades ${new Date(job.createdAt).toLocaleDateString('sv-SE', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                      })}`
-                    : job.appliedAt
-                      ? `Sökt ${new Date(job.appliedAt).toLocaleDateString('sv-SE', {
-                          day: 'numeric',
-                          month: 'long',
-                          year: 'numeric',
-                        })}`
-                      : ''}
-                </Text>
-              )}
-            </Stack>
-          </Card.Body>
-        </Card.Root>
-      </MotionBox>
-
-      <Dialog.Root
+      <JobDeleteDialog
         open={deleteDialogOpen}
-        onOpenChange={(e: { open: boolean }) => setDeleteDialogOpen(e.open)}
-      >
-        <Portal>
-          <Dialog.Backdrop />
-          <Dialog.Positioner>
-            <Dialog.Content>
-              <Dialog.Header>
-                <Dialog.Title>Ta bort jobb</Dialog.Title>
-              </Dialog.Header>
-
-              <Dialog.Body>Är du säker på att du vill ta bort "{job.title}"?</Dialog.Body>
-
-              <Dialog.Footer>
-                <Stack direction="row">
-                  <Button variant="ghost" onClick={() => setDeleteDialogOpen(false)}>
-                    Avbryt
-                  </Button>
-                  <Button colorPalette="red" onClick={handleDelete}>
-                    Ta bort
-                  </Button>
-                </Stack>
-              </Dialog.Footer>
-            </Dialog.Content>
-          </Dialog.Positioner>
-        </Portal>
-      </Dialog.Root>
-    </Box>
+        jobTitle={job.title}
+        onClose={closeDeleteDialog}
+        onConfirm={handleDelete}
+      />
+    </>
   );
 }

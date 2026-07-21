@@ -1,8 +1,8 @@
-import { Badge, HStack, Stack, Text } from '@chakra-ui/react';
+import { Badge, Box, HStack, Stack, Text } from '@chakra-ui/react';
 import type { StatItem } from '../../utils/history-stats';
 
 type Props = {
-  title: string;
+  title?: string;
   items: StatItem[];
   emptyText: string;
 };
@@ -10,36 +10,54 @@ type Props = {
 export default function HistoryStatList({ title, items, emptyText }: Props) {
   return (
     <Stack gap="3">
-      <Text
-        fontSize="xs"
-        textTransform="uppercase"
-        letterSpacing="0.08em"
-        color="fg.muted"
-        fontWeight="semibold"
-      >
-        {title}
-      </Text>
+      {title && (
+        <Text
+          fontSize="xs"
+          textTransform="uppercase"
+          letterSpacing="0.08em"
+          color="fg.muted"
+          fontWeight="semibold"
+        >
+          {title}
+        </Text>
+      )}
 
       {items.length === 0 ? (
-        <Text color="fg.muted">{emptyText}</Text>
+        <Box py="4" px="3" bg="bg.subtle" borderRadius="xl" textAlign="center">
+          <Text color="fg.muted" fontSize="sm">
+            {emptyText}
+          </Text>
+        </Box>
       ) : (
-        <Stack gap="2">
-          {items.map((item) => (
+        <Stack gap="0">
+          {items.map((item, index) => (
             <HStack
               key={item.name}
               justify="space-between"
-              px="4"
+              gap="4"
               py="3"
-              bg="bg.subtle"
-              borderWidth="1px"
+              borderBottomWidth={index < items.length - 1 ? '1px' : '0'}
               borderColor="border.subtle"
-              borderRadius="xl"
             >
-              <Text fontWeight="medium" truncate>
+              <Text
+                minW="0"
+                fontSize="sm"
+                fontWeight="medium"
+                lineClamp="2"
+                overflowWrap="anywhere"
+              >
                 {item.name}
               </Text>
 
-              <Badge variant="subtle" borderRadius="full" px="2.5" minW="8" justifyContent="center">
+              <Badge
+                flexShrink="0"
+                variant="subtle"
+                borderRadius="full"
+                minW="8"
+                px="2.5"
+                justifyContent="center"
+                fontVariantNumeric="tabular-nums"
+              >
                 {item.count}
               </Badge>
             </HStack>

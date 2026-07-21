@@ -6,9 +6,9 @@ type Props = {
 
 export default function ProfileCityStatsCard({ cityStats }: Props) {
   return (
-    <Card.Root borderRadius="2xl" borderWidth="1px" borderColor="border.subtle" bg="bg.panel">
-      <Card.Body p="4">
-        <Stack gap="3">
+    <Card.Root borderRadius="2xl" borderWidth="1px" borderColor="border.subtle">
+      <Card.Body>
+        <Stack gap="4">
           <Text
             fontSize="xs"
             textTransform="uppercase"
@@ -20,24 +20,24 @@ export default function ProfileCityStatsCard({ cityStats }: Props) {
           </Text>
 
           {cityStats.length === 0 ? (
-            <Text fontSize="sm" color="fg.muted">
+            <Text color="fg.muted" fontSize="sm">
               Inga sökta jobb ännu.
             </Text>
           ) : (
-            <Stack gap="2">
-              {cityStats.map(([city, count]) => (
+            <Stack gap="0">
+              {cityStats.map(([city, count], index) => (
                 <HStack
                   key={city}
                   justify="space-between"
-                  px="3"
-                  py="2.5"
-                  borderRadius="xl"
-                  bg="bg.subtle"
+                  py="3"
+                  borderBottomWidth={index < cityStats.length - 1 ? '1px' : '0'}
+                  borderColor="border.subtle"
                 >
-                  <Text fontSize="sm" fontWeight="medium">
+                  <Text fontSize="sm" fontWeight="medium" lineClamp="2">
                     {city}
                   </Text>
-                  <Badge borderRadius="full" px="2.5" variant="subtle">
+
+                  <Badge variant="subtle" borderRadius="full" minW="8" justifyContent="center">
                     {count}
                   </Badge>
                 </HStack>

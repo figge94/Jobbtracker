@@ -1,10 +1,22 @@
-import { useEffect, useState } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type FormEvent,
+} from 'react';
 import type { Job, JobStatus } from '../types/job';
 import { toaster } from '../components/ui/toaster';
 import {
   isOtherOccupation as checkIsOtherOccupation,
   isOutsideCommute as checkIsOutsideCommute,
 } from '../utils/job-rules';
+import {
+  buildJob,
+  createEmptyJobFormValues,
+  getJobFormValues,
+  type JobFormValues,
+} from '../utils/job-form';
+import { useJobAdFetch } from './useJobAdFetch';
 
 type Props = {
   onAdd: (job: Job) => boolean;
@@ -13,130 +25,80 @@ type Props = {
   onCancelEdit: () => void;
 };
 
-type AdSource = 'jobsearch' | 'historical';
+export function useJobForm({
+  onAdd,
+  editingJob,
+  onUpdate,
+  onCancelEdit,
+}: Props) {
+  const [mode, setMode] =
+    useState<'link' | 'manual'>('link');
 
-type FetchAdResult = {
-  data: any;
-  source: AdSource;
-};
+  const [values, setValues] = useState<JobFormValues>(
+    createEmptyJobFormValues
+  );
 
-function formatDate(value: string | Date | null | undefined): string {
-  if (!value) return '';
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
-
-  return date.toISOString().split('T')[0];
-}
-
-function getToday(): string {
-  return new Date().toISOString().split('T')[0];
-}
-
-function getAdIdFromUrl(url: string): string | null {
-  const match = url.match(/annonser\/(\d+)/);
-  return match?.[1] ?? null;
-}
-
-async function fetchAdById(adId: string): Promise<FetchAdResult> {
-  const sources: Array<{ source: AdSource; url: string }> = [
-    {
-      source: 'jobsearch',
-      url: `https://jobsearch.api.jobtechdev.se/ad/${adId}`,
-    },
-    {
-      source: 'historical',
-      url: `https://historical.api.jobtechdev.se/ad/${adId}`,
-    },
-  ];
-
-  for (const { source, url } of sources) {
-    const response = await fetch(url);
-
-    if (response.ok) {
-      const data = await response.json();
-      return { data, source };
-    }
-
-    if (response.status !== 404) {
-      throw new Error(`API error ${response.status}`);
-    }
-  }
-
-  throw new Error('Annonsen hittades inte i aktuellt eller historiskt API');
-}
-
-export function useJobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props) {
-  const [mode, setMode] = useState<'link' | 'manual'>('link');
-
-  const [company, setCompany] = useState('');
-  const [title, setTitle] = useState('');
-  const [url, setUrl] = useState('');
-  const [city, setCity] = useState('');
-  const [employmentType, setEmploymentType] = useState('');
-  const [occupation, setOccupation] = useState('');
-  const [status, setStatus] = useState<JobStatus>('sokt');
-  const [deadline, setDeadline] = useState('');
-  const [appliedAt, setAppliedAt] = useState(getToday());
-  const [interviewAt, setInterviewAt] = useState('');
-  const [isFetching, setIsFetching] = useState(false);
-  const [adSource, setAdSource] = useState<AdSource | null>(null);
-
-  const [isOutsideCommuteDistance, setIsOutsideCommuteDistance] = useState(false);
-  const [isOtherOccupation, setIsOtherOccupation] = useState(false);
+  const {
+    fetchAd,
+    isFetching,
+    adSource,
+    resetAdFetch,
+  } = useJobAdFetch();
 
   const isEditing = editingJob !== null;
-  const requiresAppliedAt = status !== 'vill_soka';
+  const requiresAppliedAt =
+    values.status !== 'vill_soka';
 
   const isValid =
-    company.trim() !== '' && title.trim() !== '' && (!requiresAppliedAt || appliedAt.trim() !== '');
+    values.company.trim() !== '' &&
+    values.title.trim() !== '' &&
+    (!requiresAppliedAt ||
+      values.appliedAt.trim() !== '');
 
-  const canFetch = url.trim() !== '' && !isFetching && !isEditing;
-  const fieldsLocked = mode === 'link' && adSource !== null && !isEditing;
+  const canFetch =
+    values.url.trim() !== '' &&
+    !isFetching &&
+    !isEditing;
 
-  const lockedStyles = fieldsLocked
-    ? {
-        bg: 'gray.100',
-        _dark: { bg: 'gray.900' },
-        cursor: 'not-allowed',
-        opacity: 0.8,
-        borderColor: 'gray.200',
-      }
-    : {};
+  const fieldsLocked =
+    mode === 'link' &&
+    adSource !== null &&
+    !isEditing;
+
+  const lockedStyles = useMemo(
+    () =>
+      fieldsLocked
+        ? {
+            bg: 'gray.100',
+            _dark: { bg: 'gray.900' },
+            cursor: 'not-allowed',
+            opacity: 0.8,
+            borderColor: 'gray.200',
+          }
+        : {},
+    [fieldsLocked]
+  );
+
+  function updateField<K extends keyof JobFormValues>(
+    field: K,
+    value: JobFormValues[K]
+  ) {
+    setValues((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  }
 
   function resetForm() {
-    setCompany('');
-    setTitle('');
-    setUrl('');
-    setCity('');
-    setEmploymentType('');
-    setOccupation('');
-    setStatus('sokt');
-    setDeadline('');
-    setAppliedAt(getToday());
-    setInterviewAt('');
-    setAdSource(null);
-    setIsFetching(false);
-    setIsOutsideCommuteDistance(false);
-    setIsOtherOccupation(false);
+    setValues(createEmptyJobFormValues());
+    resetAdFetch();
   }
 
   useEffect(() => {
     if (editingJob) {
       setMode('manual');
-      setCompany(editingJob.company ?? '');
-      setTitle(editingJob.title ?? '');
-      setUrl(editingJob.url ?? '');
-      setCity(editingJob.city ?? '');
-      setEmploymentType(editingJob.employmentType ?? '');
-      setOccupation(editingJob.occupation ?? '');
-      setStatus(editingJob.status);
-      setDeadline(formatDate(editingJob.deadline));
-      setAppliedAt(formatDate(editingJob.appliedAt));
-      setInterviewAt(editingJob.interviewAt ?? '');
-      setIsOutsideCommuteDistance(editingJob.isOutsideCommuteDistance ?? false);
-      setIsOtherOccupation(editingJob.isOtherOccupation ?? false);
-      setAdSource(null);
+      setValues(getJobFormValues(editingJob));
+      resetAdFetch();
       return;
     }
 
@@ -145,95 +107,60 @@ export function useJobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props)
   }, [editingJob]);
 
   useEffect(() => {
-    if (isEditing) return;
-
-    if (!city.trim()) {
-      setIsOutsideCommuteDistance(false);
+    if (isEditing) {
       return;
     }
 
-    setIsOutsideCommuteDistance(checkIsOutsideCommute(city));
-  }, [city, isEditing]);
+    updateField(
+      'isOutsideCommuteDistance',
+      values.city.trim()
+        ? checkIsOutsideCommute(values.city)
+        : false
+    );
+  }, [values.city, isEditing]);
 
   useEffect(() => {
-    if (isEditing) return;
-
-    if (!occupation.trim()) {
-      setIsOtherOccupation(false);
+    if (isEditing) {
       return;
     }
 
-    setIsOtherOccupation(checkIsOtherOccupation(occupation));
-  }, [occupation, isEditing]);
+    updateField(
+      'isOtherOccupation',
+      values.occupation.trim()
+        ? checkIsOtherOccupation(values.occupation)
+        : false
+    );
+  }, [values.occupation, isEditing]);
 
   async function handleFetchInfo() {
-    if (!url.trim() || isFetching || isEditing) return;
-
-    setIsFetching(true);
-
-    try {
-      const adId = getAdIdFromUrl(url);
-
-      if (!adId) {
-        toaster.create({
-          title: 'Ogiltig länk',
-          description: 'Kunde inte hitta annons-id i länken.',
-          type: 'error',
-          closable: true,
-        });
-        return;
-      }
-
-      const { data, source } = await fetchAdById(adId);
-
-      const cityValue =
-        data.workplace_address?.municipality ??
-        data.workplace_address?.city ??
-        data.workplace_address?.region ??
-        data.application_details?.location ??
-        '';
-
-      const occupationValue =
-        data.occupation?.label ?? data.occupation_group?.label ?? data.profession?.label ?? '';
-
-      const deadlineValue = data.last_publication_date ?? data.application_deadline ?? '';
-
-      setTitle(data.headline ?? '');
-      setCompany(data.employer?.name ?? '');
-      setCity(cityValue);
-      setDeadline(formatDate(deadlineValue));
-      setEmploymentType(data.working_hours_type?.label ?? '');
-      setOccupation(occupationValue);
-      setAdSource(source);
-
-      toaster.create({
-        title: 'Annons hämtad',
-        description:
-          source === 'historical'
-            ? 'Information hämtades från historiskt arkiv.'
-            : 'Informationen fylldes i automatiskt.',
-        type: 'success',
-        closable: true,
-      });
-    } catch (error) {
-      console.error(error);
-      setAdSource(null);
-
-      toaster.create({
-        title: 'Kunde inte hämta annonsen',
-        description: error instanceof Error ? error.message : 'Ett oväntat fel inträffade.',
-        type: 'error',
-        closable: true,
-      });
-    } finally {
-      setIsFetching(false);
+    if (!canFetch) {
+      return;
     }
+
+    const ad = await fetchAd(values.url);
+
+    if (!ad) {
+      return;
+    }
+
+    setValues((current) => ({
+      ...current,
+      title: ad.title,
+      company: ad.company,
+      city: ad.city,
+      deadline: ad.deadline,
+      employmentType: ad.employmentType,
+      occupation: ad.occupation,
+    }));
   }
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  function handleSubmit(event: FormEvent) {
+    event.preventDefault();
 
-    if (!company.trim() || !title.trim()) {
+    if (
+      !values.company.trim() ||
+      !values.title.trim()
+    ) {
       toaster.create({
         title: 'Saknar information',
         description: 'Fyll i företag och titel.',
@@ -243,62 +170,35 @@ export function useJobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props)
       return;
     }
 
-    if (requiresAppliedAt && !appliedAt.trim()) {
+    if (
+      requiresAppliedAt &&
+      !values.appliedAt.trim()
+    ) {
       toaster.create({
         title: 'Saknar ansökningsdatum',
-        description: 'Ange vilket datum du sökte jobbet.',
+        description:
+          'Ange vilket datum du sökte jobbet.',
         type: 'error',
         closable: true,
       });
       return;
     }
 
-    if (status === 'intervju' && !interviewAt) {
+    if (
+      values.status === 'intervju' &&
+      !values.interviewAt
+    ) {
       toaster.create({
         title: 'Saknar intervjutid',
-        description: 'Ange datum och tid för intervjun.',
+        description:
+          'Ange datum och tid för intervjun.',
         type: 'error',
         closable: true,
       });
       return;
     }
 
-    const normalizedAppliedAt = requiresAppliedAt ? formatDate(appliedAt) : '';
-
-    const jobData: Job = editingJob
-      ? {
-          ...editingJob,
-          company: company.trim(),
-          title: title.trim(),
-          url: url.trim(),
-          city: city.trim(),
-          employmentType: employmentType.trim(),
-          occupation: occupation.trim(),
-          status,
-          deadline: formatDate(deadline),
-          appliedAt: normalizedAppliedAt,
-          interviewAt,
-          adId: getAdIdFromUrl(url) ?? editingJob.adId,
-          isOutsideCommuteDistance,
-          isOtherOccupation,
-        }
-      : {
-          id: crypto.randomUUID(),
-          company: company.trim(),
-          title: title.trim(),
-          url: url.trim(),
-          city: city.trim(),
-          employmentType: employmentType.trim(),
-          occupation: occupation.trim(),
-          status,
-          deadline: formatDate(deadline),
-          appliedAt: normalizedAppliedAt,
-          interviewAt,
-          createdAt: new Date().toISOString(),
-          adId: getAdIdFromUrl(url) ?? undefined,
-          isOutsideCommuteDistance,
-          isOtherOccupation,
-        };
+    const jobData = buildJob(values, editingJob);
 
     if (editingJob) {
       onUpdate(jobData);
@@ -340,31 +240,35 @@ export function useJobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props)
   return {
     mode,
     setMode,
-    company,
-    setCompany,
-    title,
-    setTitle,
-    url,
-    setUrl,
-    city,
-    setCity,
-    employmentType,
-    setEmploymentType,
-    occupation,
-    setOccupation,
-    status,
-    setStatus,
-    deadline,
-    setDeadline,
-    appliedAt,
-    setAppliedAt,
+
+    ...values,
+
+    setCompany: (value: string) =>
+      updateField('company', value),
+    setTitle: (value: string) =>
+      updateField('title', value),
+    setUrl: (value: string) =>
+      updateField('url', value),
+    setCity: (value: string) =>
+      updateField('city', value),
+    setEmploymentType: (value: string) =>
+      updateField('employmentType', value),
+    setOccupation: (value: string) =>
+      updateField('occupation', value),
+    setStatus: (value: JobStatus) =>
+      updateField('status', value),
+    setDeadline: (value: string) =>
+      updateField('deadline', value),
+    setAppliedAt: (value: string) =>
+      updateField('appliedAt', value),
+    setInterviewAt: (value: string) =>
+      updateField('interviewAt', value),
+    setIsOutsideCommuteDistance: (value: boolean) =>
+      updateField('isOutsideCommuteDistance', value),
+    setIsOtherOccupation: (value: boolean) =>
+      updateField('isOtherOccupation', value),
+
     requiresAppliedAt,
-    interviewAt,
-    setInterviewAt,
-    isOutsideCommuteDistance,
-    setIsOutsideCommuteDistance,
-    isOtherOccupation,
-    setIsOtherOccupation,
     isFetching,
     adSource,
     isEditing,
