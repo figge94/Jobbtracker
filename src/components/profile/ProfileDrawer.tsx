@@ -1,4 +1,4 @@
-import { Button, Drawer, Stack, Text } from '@chakra-ui/react';
+import { Button, CloseButton, Drawer, Stack, Text } from '@chakra-ui/react';
 import type { JobStatus } from '../../types/job';
 import ProfileCityStatsCard from './ProfileCityStatsCard';
 import ProfileStatusGrid from './ProfileStatusGrid';
@@ -39,6 +39,16 @@ export default function ProfileDrawer({
 
       <Drawer.Positioner>
         <Drawer.Content maxW={{ base: 'full', sm: '420px' }} bg="bg.canvas">
+          <Drawer.CloseTrigger asChild>
+            <CloseButton
+              position="absolute"
+              top={{ base: '4', md: '5' }}
+              right={{ base: '4', md: '5' }}
+              size="sm"
+              aria-label="Stäng profil"
+            />
+          </Drawer.CloseTrigger>
+
           <Drawer.Header
             px={{ base: '5', md: '6' }}
             pt={{ base: '5', md: '6' }}
@@ -46,7 +56,7 @@ export default function ProfileDrawer({
             borderBottomWidth="1px"
             borderColor="border.subtle"
           >
-            <Stack gap="1" pr="8">
+            <Stack gap="1" pr="10">
               <Drawer.Title fontSize="xl">Profil</Drawer.Title>
 
               <Text fontSize="sm" color="fg.muted">
@@ -82,8 +92,6 @@ export default function ProfileDrawer({
               Visa fullständig historik
             </Button>
           </Drawer.Footer>
-
-          <Drawer.CloseTrigger />
         </Drawer.Content>
       </Drawer.Positioner>
     </Drawer.Root>

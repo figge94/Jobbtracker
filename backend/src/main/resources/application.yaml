@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    url: jdbc:sqlite:./jobbtracker.db
+    driver-class-name: org.sqlite.JDBC
+    hikari:
+      maximum-pool-size: 1
+
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  session:
+    timeout: 7d
+    jdbc:
+      initialize-schema: never
+      table-name: SPRING_SESSION
+
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        same-site: lax
+        secure: false
