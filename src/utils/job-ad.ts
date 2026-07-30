@@ -94,7 +94,7 @@ export function mapAdData(data: unknown, source: AdSource): JobAdData {
       ad.workplace_address?.region ??
       ad.application_details?.location ??
       '',
-    deadline: ad.last_publication_date ?? ad.application_deadline ?? '',
+    deadline: (ad.last_publication_date ?? ad.application_deadline ?? '').slice(0, 10),
     employmentType: ad.working_hours_type?.label ?? '',
     occupation: ad.occupation?.label ?? ad.occupation_group?.label ?? ad.profession?.label ?? '',
     source,
