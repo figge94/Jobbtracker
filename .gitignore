@@ -24,3 +24,5 @@ stats.html
 *.sln
 *.sw?
 stats.html
+
+jobbtracker.db
