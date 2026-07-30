@@ -88,21 +88,49 @@ export function useJobs() {
   const currentMonthJobs = useMemo(() => {
     const now = new Date();
 
-    return filteredJobs.filter((job) => {
-      const relevantDate = job.appliedAt ?? job.createdAt;
+    return jobs.filter((job) => {
+      const relevantDate =
+        job.status === 'vill_soka' ? job.createdAt : (job.appliedAt ?? job.createdAt);
+
       const date = new Date(relevantDate);
 
       return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth();
     });
-  }, [filteredJobs]);
+  }, [jobs]);
+
+  const filteredCurrentMonthJobs = useMemo(() => {
+    const normalizedSearch = search.trim().toLowerCase();
+
+    return currentMonthJobs
+      .filter(
+        (job) =>
+          job.title.toLowerCase().includes(normalizedSearch) ||
+          job.company.toLowerCase().includes(normalizedSearch) ||
+          (job.city ?? '').toLowerCase().includes(normalizedSearch) ||
+          (job.occupation ?? '').toLowerCase().includes(normalizedSearch)
+      )
+      .filter((job) => (statusFilter === 'alla' ? true : job.status === statusFilter));
+  }, [currentMonthJobs, search, statusFilter]);
 
   const historyJobs = jobs;
 
-  const stats = useMemo(() => {
+  const currentMonthStats = useMemo(() => {
     return Object.fromEntries(
-      JOB_STATUSES.map((status) => [status, jobs.filter((job) => job.status === status).length])
+      JOB_STATUSES.map((status) => [
+        status,
+        currentMonthJobs.filter((job) => job.status === status).length,
+      ])
     ) as Record<JobStatus, number>;
-  }, [jobs]);
+  }, [currentMonthJobs]);
+
+  const historyStats = useMemo(() => {
+    return Object.fromEntries(
+      JOB_STATUSES.map((status) => [
+        status,
+        historyJobs.filter((job) => job.status === status).length,
+      ])
+    ) as Record<JobStatus, number>;
+  }, [historyJobs]);
 
   const cityStats = useMemo(() => {
     const appliedJobs = jobs.filter((job) => job.status === 'sokt');
@@ -140,13 +168,15 @@ export function useJobs() {
   return {
     jobs,
     currentMonthJobs,
+    filteredCurrentMonthJobs,
     historyJobs,
     search,
     setSearch,
     statusFilter,
     setStatusFilter,
     filteredJobs,
-    stats,
+    currentMonthStats,
+    historyStats,
     cityStats,
     occupationStats,
     jobsByStatus,

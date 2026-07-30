@@ -10,8 +10,7 @@ const JobStats = lazy(() => import('../stats/JobStats'));
 type Props = {
   search: string;
   onSearchChange: (value: string) => void;
-  stats: any;
-  cityStats: any;
+  stats: Record<JobStatus, number>;
   statusFilter: JobStatus | 'alla';
   onStatusFilterChange: (value: JobStatus | 'alla') => void;
   viewMode: 'list' | 'board';
@@ -28,7 +27,6 @@ export function HomePageContent({
   search,
   onSearchChange,
   stats,
-  cityStats,
   statusFilter,
   onStatusFilterChange,
   viewMode,
@@ -45,7 +43,7 @@ export function HomePageContent({
       <AppHeader search={search} onSearchChange={onSearchChange} />
 
       <Suspense fallback={null}>
-        <JobStats stats={stats} cityStats={cityStats} />
+        <JobStats stats={stats} />
       </Suspense>
 
       <JobFilters
