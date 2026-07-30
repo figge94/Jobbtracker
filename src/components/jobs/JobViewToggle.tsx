@@ -1,29 +1,46 @@
-import { SegmentGroup } from "@chakra-ui/react";
-import { List, Grid2x2 } from "lucide-react";
+import { SegmentGroup, VisuallyHidden } from '@chakra-ui/react';
+import { Grid2x2, List } from 'lucide-react';
+
+type ViewMode = 'list' | 'board';
 
 type Props = {
-  viewMode: "list" | "board";
-  onChange: (mode: "list" | "board") => void;
+  viewMode: ViewMode;
+  onChange: (mode: ViewMode) => void;
 };
 
 export function JobViewToggle({ viewMode, onChange }: Props) {
   return (
     <SegmentGroup.Root
       value={viewMode}
-      onValueChange={(e) => onChange(e.value as "list" | "board")}
+      onValueChange={(event) => {
+        if (event.value) {
+          onChange(event.value as ViewMode);
+        }
+      }}
       size="md"
+      aria-label="Välj visningsläge"
     >
       <SegmentGroup.Indicator />
 
       <SegmentGroup.Items
         items={[
           {
-            value: "list",
-            label: <List size={18} />,
+            value: 'list',
+            label: (
+              <>
+                <List size={18} aria-hidden="true" />
+                <VisuallyHidden>Listvy</VisuallyHidden>
+              </>
+            ),
           },
           {
-            value: "board",
-            label: <Grid2x2 size={18} />,
+            value: 'board',
+            label: (
+              <>
+                <Grid2x2 size={18} aria-hidden="true" />
+                <VisuallyHidden>Boardvy</VisuallyHidden>
+              </>
+            ),
           },
         ]}
       />

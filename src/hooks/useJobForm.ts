@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import type { Job, JobStatus } from '../types/job';
 import { validateJobForm } from '../utils/job-form-validation';
 import {
