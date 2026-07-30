@@ -17,7 +17,7 @@ spring:
   session:
     timeout: 7d
     jdbc:
-      initialize-schema: never
+      initialize-schema: always
       table-name: SPRING_SESSION
 
 server:
