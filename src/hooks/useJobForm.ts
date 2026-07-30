@@ -1,11 +1,12 @@
-import {
-  useEffect,
-  useMemo,
-  useState,
-  type FormEvent,
-} from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import type { Job, JobStatus } from '../types/job';
-import { toaster } from '../components/ui/toaster';
+import { validateJobForm } from '../utils/job-form-validation';
+import {
+  showDuplicateJob,
+  showJobAdded,
+  showJobUpdated,
+  showValidationError,
+} from '../utils/job-form-notifications';
 import {
   isOtherOccupation as checkIsOtherOccupation,
   isOutsideCommute as checkIsOutsideCommute,
@@ -25,64 +26,36 @@ type Props = {
   onCancelEdit: () => void;
 };
 
-export function useJobForm({
-  onAdd,
-  editingJob,
-  onUpdate,
-  onCancelEdit,
-}: Props) {
-  const [mode, setMode] =
-    useState<'link' | 'manual'>('link');
+export function useJobForm({ onAdd, editingJob, onUpdate, onCancelEdit }: Props) {
+  const [mode, setMode] = useState<'link' | 'manual'>('link');
 
-  const [values, setValues] = useState<JobFormValues>(
-    createEmptyJobFormValues
-  );
+  const [values, setValues] = useState<JobFormValues>(createEmptyJobFormValues);
 
-  const {
-    fetchAd,
-    isFetching,
-    adSource,
-    resetAdFetch,
-  } = useJobAdFetch();
+  const { fetchAd, isFetching, adSource, resetAdFetch } = useJobAdFetch();
 
   const isEditing = editingJob !== null;
-  const requiresAppliedAt =
-    values.status !== 'vill_soka';
+  const requiresAppliedAt = values.status !== 'vill_soka';
 
   const isValid =
     values.company.trim() !== '' &&
     values.title.trim() !== '' &&
-    (!requiresAppliedAt ||
-      values.appliedAt.trim() !== '');
+    (!requiresAppliedAt || values.appliedAt.trim() !== '');
 
-  const canFetch =
-    values.url.trim() !== '' &&
-    !isFetching &&
-    !isEditing;
+  const canFetch = values.url.trim() !== '' && !isFetching && !isEditing;
 
-  const fieldsLocked =
-    mode === 'link' &&
-    adSource !== null &&
-    !isEditing;
+  const fieldsLocked = mode === 'link' && adSource !== null && !isEditing;
 
-  const lockedStyles = useMemo(
-    () =>
-      fieldsLocked
-        ? {
-            bg: 'gray.100',
-            _dark: { bg: 'gray.900' },
-            cursor: 'not-allowed',
-            opacity: 0.8,
-            borderColor: 'gray.200',
-          }
-        : {},
-    [fieldsLocked]
-  );
+  const lockedStyles = fieldsLocked
+    ? {
+        bg: 'gray.100',
+        _dark: { bg: 'gray.900' },
+        cursor: 'not-allowed',
+        opacity: 0.8,
+        borderColor: 'gray.200',
+      }
+    : {};
 
-  function updateField<K extends keyof JobFormValues>(
-    field: K,
-    value: JobFormValues[K]
-  ) {
+  function updateField<K extends keyof JobFormValues>(field: K, value: JobFormValues[K]) {
     setValues((current) => ({
       ...current,
       [field]: value,
@@ -113,9 +86,7 @@ export function useJobForm({
 
     updateField(
       'isOutsideCommuteDistance',
-      values.city.trim()
-        ? checkIsOutsideCommute(values.city)
-        : false
+      values.city.trim() ? checkIsOutsideCommute(values.city) : false
     );
   }, [values.city, isEditing]);
 
@@ -126,9 +97,7 @@ export function useJobForm({
 
     updateField(
       'isOtherOccupation',
-      values.occupation.trim()
-        ? checkIsOtherOccupation(values.occupation)
-        : false
+      values.occupation.trim() ? checkIsOtherOccupation(values.occupation) : false
     );
   }, [values.occupation, isEditing]);
 
@@ -157,44 +126,10 @@ export function useJobForm({
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
 
-    if (
-      !values.company.trim() ||
-      !values.title.trim()
-    ) {
-      toaster.create({
-        title: 'Saknar information',
-        description: 'Fyll i företag och titel.',
-        type: 'error',
-        closable: true,
-      });
-      return;
-    }
+    const validationError = validateJobForm(values);
 
-    if (
-      requiresAppliedAt &&
-      !values.appliedAt.trim()
-    ) {
-      toaster.create({
-        title: 'Saknar ansökningsdatum',
-        description:
-          'Ange vilket datum du sökte jobbet.',
-        type: 'error',
-        closable: true,
-      });
-      return;
-    }
-
-    if (
-      values.status === 'intervju' &&
-      !values.interviewAt
-    ) {
-      toaster.create({
-        title: 'Saknar intervjutid',
-        description:
-          'Ange datum och tid för intervjun.',
-        type: 'error',
-        closable: true,
-      });
+    if (validationError) {
+      showValidationError(validationError);
       return;
     }
 
@@ -202,14 +137,7 @@ export function useJobForm({
 
     if (editingJob) {
       onUpdate(jobData);
-
-      toaster.create({
-        title: 'Jobb uppdaterat',
-        description: `${jobData.title} uppdaterades.`,
-        type: 'success',
-        closable: true,
-      });
-
+      showJobUpdated(jobData);
       onCancelEdit();
       return;
     }
@@ -217,22 +145,11 @@ export function useJobForm({
     const wasAdded = onAdd(jobData);
 
     if (!wasAdded) {
-      toaster.create({
-        title: 'Jobbet finns redan',
-        description: `${jobData.title} hos ${jobData.company} är redan sparat.`,
-        type: 'warning',
-        closable: true,
-      });
+      showDuplicateJob(jobData);
       return;
     }
 
-    toaster.create({
-      title: 'Jobb sparat',
-      description: `${jobData.title} hos ${jobData.company} lades till.`,
-      type: 'success',
-      closable: true,
-    });
-
+    showJobAdded(jobData);
     resetForm();
     setMode('link');
   }
@@ -243,30 +160,18 @@ export function useJobForm({
 
     ...values,
 
-    setCompany: (value: string) =>
-      updateField('company', value),
-    setTitle: (value: string) =>
-      updateField('title', value),
-    setUrl: (value: string) =>
-      updateField('url', value),
-    setCity: (value: string) =>
-      updateField('city', value),
-    setEmploymentType: (value: string) =>
-      updateField('employmentType', value),
-    setOccupation: (value: string) =>
-      updateField('occupation', value),
-    setStatus: (value: JobStatus) =>
-      updateField('status', value),
-    setDeadline: (value: string) =>
-      updateField('deadline', value),
-    setAppliedAt: (value: string) =>
-      updateField('appliedAt', value),
-    setInterviewAt: (value: string) =>
-      updateField('interviewAt', value),
-    setIsOutsideCommuteDistance: (value: boolean) =>
-      updateField('isOutsideCommuteDistance', value),
-    setIsOtherOccupation: (value: boolean) =>
-      updateField('isOtherOccupation', value),
+    setCompany: (value: string) => updateField('company', value),
+    setTitle: (value: string) => updateField('title', value),
+    setUrl: (value: string) => updateField('url', value),
+    setCity: (value: string) => updateField('city', value),
+    setEmploymentType: (value: string) => updateField('employmentType', value),
+    setOccupation: (value: string) => updateField('occupation', value),
+    setStatus: (value: JobStatus) => updateField('status', value),
+    setDeadline: (value: string) => updateField('deadline', value),
+    setAppliedAt: (value: string) => updateField('appliedAt', value),
+    setInterviewAt: (value: string) => updateField('interviewAt', value),
+    setIsOutsideCommuteDistance: (value: boolean) => updateField('isOutsideCommuteDistance', value),
+    setIsOtherOccupation: (value: boolean) => updateField('isOtherOccupation', value),
 
     requiresAppliedAt,
     isFetching,
