@@ -23,7 +23,6 @@ export default function App() {
     statusFilter,
     setStatusFilter,
     currentMonthStats,
-    historyStats,
     cityStats,
     addJob,
     updateJob,
@@ -89,8 +88,9 @@ export default function App() {
 
       <AppOverlays
         page={page}
-        jobs={historyJobs}
-        stats={historyStats}
+        currentMonthJobs={filteredCurrentMonthJobs}
+        historyJobs={historyJobs}
+        stats={currentMonthStats}
         cityStats={cityStats}
         editingJob={editingJob}
         setPage={setPage}

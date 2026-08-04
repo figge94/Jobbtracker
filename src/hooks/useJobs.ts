@@ -147,6 +147,17 @@ export function useJobs() {
     return Object.entries(counts).sort((a, b) => b[1] - a[1]);
   }, [jobs]);
 
+  const currentMonthCityStats = useMemo(() => {
+    const counts = filteredCurrentMonthJobs.reduce<Record<string, number>>((result, job) => {
+      if (!job.city) return result;
+
+      result[job.city] = (result[job.city] ?? 0) + 1;
+      return result;
+    }, {});
+
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  }, [filteredCurrentMonthJobs]);
+
   const occupationStats = useMemo(() => {
     const counts = jobs.reduce<Record<string, number>>((acc, job) => {
       const key = job.occupation?.trim() || 'Okänt';
@@ -168,6 +179,7 @@ export function useJobs() {
   return {
     jobs,
     currentMonthJobs,
+    currentMonthCityStats,
     filteredCurrentMonthJobs,
     historyJobs,
     search,

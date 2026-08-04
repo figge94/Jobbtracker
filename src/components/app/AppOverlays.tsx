@@ -8,7 +8,8 @@ const HistoryList = lazy(() => import('../history/HistoryList'));
 
 export function AppOverlays({
   page,
-  jobs,
+  currentMonthJobs,
+  historyJobs,
   stats,
   cityStats,
   editingJob,
@@ -20,7 +21,10 @@ export function AppOverlays({
   onUpdate,
   onCloseModal,
 }: AppOverlaysProps) {
-  const appliedJobs = useMemo(() => jobs.filter((job) => job.status !== 'vill_soka'), [jobs]);
+  const appliedJobs = useMemo(
+    () => currentMonthJobs.filter((job) => job.status !== 'vill_soka'),
+    [currentMonthJobs]
+  );
 
   const outsideCommuteCount = useMemo(
     () => appliedJobs.filter((job) => job.isOutsideCommuteDistance).length,
@@ -36,7 +40,7 @@ export function AppOverlays({
     <>
       {page === 'history' && (
         <Suspense fallback={null}>
-          <HistoryList jobs={jobs} onBack={() => setPage('home')} />
+          <HistoryList jobs={historyJobs} onBack={() => setPage('home')} />
         </Suspense>
       )}
 
@@ -63,7 +67,7 @@ export function AppOverlays({
             }}
             stats={stats}
             cityStats={cityStats}
-            totalJobs={jobs.length}
+            totalJobs={currentMonthJobs.length}
             outsideCommuteCount={outsideCommuteCount}
             otherOccupationCount={otherOccupationCount}
           />

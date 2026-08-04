@@ -9,7 +9,8 @@ export type DisclosureLike = {
 
 export type AppOverlaysProps = {
   page: AppPage;
-  jobs: Job[];
+  currentMonthJobs: Job[];
+  historyJobs: Job[];
   stats: Record<JobStatus, number>;
   cityStats: [string, number][];
   editingJob: Job | null;

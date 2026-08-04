@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  CloseButton,
   Drawer,
   Field,
   Heading,
@@ -41,6 +42,9 @@ export default function SettingsDrawer({ open, onClose }: Props) {
           <Drawer.Header borderBottomWidth="1px" borderColor="border.subtle">
             <Drawer.Title>Inställningar</Drawer.Title>
           </Drawer.Header>
+          <Drawer.CloseTrigger asChild>
+            <CloseButton position="absolute" top="4" right="4" size="sm" aria-label="Stäng" />
+          </Drawer.CloseTrigger>
 
           <Drawer.Body py="6">
             <Stack gap="7">
