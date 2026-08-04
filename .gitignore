@@ -24,3 +24,9 @@ stats.html
 *.sln
 *.sw?
 stats.html
+
+backend/.gradle/
+backend/build/
+backend/*.iml
+jobbtracker.db
+*.db
