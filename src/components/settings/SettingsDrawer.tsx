@@ -12,6 +12,7 @@ import {
 } from '@chakra-ui/react';
 import type { ReactNode } from 'react';
 import { useSettings } from '../../hooks/useSettings';
+import { ActivityReportSettings } from './ActivityReportSettings';
 import { JOB_STATUSES, getStatusLabel } from '../../utils/job-status';
 import { ColorModeButton } from '../ui/color-mode';
 
@@ -121,6 +122,19 @@ export default function SettingsDrawer({ open, onClose }: Props) {
                   </NativeSelect.Root>
                 </Field.Root>
               </SettingsSection>
+
+              <Separator />
+
+              <ActivityReportSettings
+                isRegistered={settings.isRegisteredWithArbetsformedlingen}
+                onRegisteredChange={(value) => {
+                  updateSettings({
+                    isRegisteredWithArbetsformedlingen: value,
+                  });
+                }}
+              />
+
+              <Separator />
 
               <Separator />
 

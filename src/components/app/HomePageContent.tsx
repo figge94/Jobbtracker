@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react';
-import { Stack } from '@chakra-ui/react';
+import { Button, Stack } from '@chakra-ui/react';
 import { AppHeader } from '../AppHeader';
 import { JobFilters } from '../jobs/JobFilters';
 import type { Job, JobStatus } from '../../types/job';
@@ -21,6 +21,8 @@ type Props = {
   onDelete: (id: string) => void;
   onStatusChange: (id: string, status: JobStatus) => void;
   onEdit: (job: Job) => void;
+  showActivityReportButton: boolean;
+  onOpenActivityReport: () => void;
 };
 
 export function HomePageContent({
@@ -37,6 +39,7 @@ export function HomePageContent({
   onDelete,
   onStatusChange,
   onEdit,
+  onOpenActivityReport,
 }: Props) {
   return (
     <Stack gap={{ base: '5', md: '8' }}>
@@ -45,6 +48,15 @@ export function HomePageContent({
       <Suspense fallback={null}>
         <JobStats stats={stats} />
       </Suspense>
+
+      <Button
+        alignSelf="flex-start"
+        colorPalette="blue"
+        variant="outline"
+        onClick={onOpenActivityReport}
+      >
+        Dags att aktivitetsrapportera
+      </Button>
 
       <JobFilters
         statusFilter={statusFilter}

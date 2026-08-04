@@ -5,6 +5,7 @@ export type UserSettings = {
   outsideCommuteGoal: number;
   otherOccupationGoal: number;
   defaultJobStatus: JobStatus;
+  isRegisteredWithArbetsformedlingen: boolean;
 };
 
 export const defaultSettings: UserSettings = {
@@ -12,4 +13,5 @@ export const defaultSettings: UserSettings = {
   outsideCommuteGoal: 5,
   otherOccupationGoal: 3,
   defaultJobStatus: 'sokt',
+  isRegisteredWithArbetsformedlingen: false,
 };

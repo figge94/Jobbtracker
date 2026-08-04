@@ -1,17 +1,19 @@
 import type { Job, JobStatus } from './job';
 
+export type AppPage = 'home' | 'history' | 'activity-report';
+
 export type DisclosureLike = {
   open: boolean;
   onClose: () => void;
 };
 
 export type AppOverlaysProps = {
-  page: 'home' | 'history';
+  page: AppPage;
   jobs: Job[];
   stats: Record<JobStatus, number>;
   cityStats: [string, number][];
   editingJob: Job | null;
-  setPage: (page: 'home' | 'history') => void;
+  setPage: (page: AppPage) => void;
   jobModal: DisclosureLike;
   profileDrawer: DisclosureLike;
   settingsDrawer: DisclosureLike;
